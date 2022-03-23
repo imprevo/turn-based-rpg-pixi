@@ -1,8 +1,6 @@
-import "./style.css";
+import { app } from './app';
+import './style.css';
 
-const app = document.querySelector<HTMLDivElement>("#app")!;
+const root = document.querySelector<HTMLDivElement>('#root');
 
-app.innerHTML = `
-  <h1>Hello Gamedev!</h1>
-  <a href="https://vitejs.dev/guide/features.html" target="_blank">Documentation</a>
-`;
+root?.appendChild(app.view);
