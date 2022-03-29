@@ -12,6 +12,7 @@ class Battle {
 }
 Battle ..> Team
 Battle ..> TeamController
+Battle ..> Queue
 
 class Unit {
   Stats stats
@@ -29,7 +30,6 @@ class Damage {
   int magic
 }
 
-Unit ..> Queue
 Unit ..> Stats
 Unit ..> Damage
 
@@ -40,7 +40,6 @@ class Queue {
   Team currentTeam
   next()
 }
-
 
 class Team {
   TODO: rename class
