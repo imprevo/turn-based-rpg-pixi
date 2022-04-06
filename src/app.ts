@@ -7,10 +7,14 @@ export const app = new PIXI.Application({
   height: 600,
 });
 
-const container = new Environment();
-app.stage.addChild(container);
+const environment = new Environment();
+app.stage.addChild(environment);
 
 const basicText = new PIXI.Text('Turn-based RPG');
 basicText.x = 50;
 basicText.y = 50;
 app.stage.addChild(basicText);
+
+app.ticker.add(() => {
+  environment.update();
+});
