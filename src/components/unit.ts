@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import idleImg from '../assets/sci-fi/bot-wheel/charge.png';
 
 const idleTexture = PIXI.Texture.from(idleImg);
+idleTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
 const idleSprite = new PIXI.Spritesheet(idleTexture, {
   frames: {

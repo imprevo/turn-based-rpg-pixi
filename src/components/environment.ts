@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js';
 import planetOneTexture from '../assets/sci-fi/planet-one.png';
 
 const texture = PIXI.Texture.from(planetOneTexture);
+texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
+
 const sprite = new PIXI.Spritesheet(texture, {
   frames: {
     background: {
