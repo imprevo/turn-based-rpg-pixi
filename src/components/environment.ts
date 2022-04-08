@@ -1,75 +1,22 @@
 import * as PIXI from 'pixi.js';
 import planetOneTexture from '../assets/sci-fi/planet-one.png';
+import { SpriteGrid } from '../utils/sprite';
 
 const texture = PIXI.Texture.from(planetOneTexture);
 texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
+const grid = new SpriteGrid(16, 16);
+
 const sprite = new PIXI.Spritesheet(texture, {
   frames: {
-    background: {
-      frame: {
-        x: 0,
-        y: 0,
-        w: 256,
-        h: 48,
-      },
-    },
-    ground: {
-      frame: {
-        x: 0,
-        y: 48,
-        w: 256,
-        h: 16,
-      },
-    },
-    sun: {
-      frame: {
-        x: 210,
-        y: 100,
-        w: 40,
-        h: 40,
-      },
-    },
-    dock: {
-      frame: {
-        x: 182,
-        y: 186,
-        w: 74,
-        h: 36,
-      },
-    },
-    lantern: {
-      frame: {
-        x: 88,
-        y: 130,
-        w: 44,
-        h: 48,
-      },
-    },
-    puddle1: {
-      frame: {
-        x: 0,
-        y: 232,
-        w: 46,
-        h: 24,
-      },
-    },
-    puddle2: {
-      frame: {
-        x: 46,
-        y: 232,
-        w: 46,
-        h: 24,
-      },
-    },
-    garbage: {
-      frame: {
-        x: 100,
-        y: 240,
-        w: 60,
-        h: 16,
-      },
-    },
+    background: grid.getFrame(0, 0, 16, 3),
+    ground: grid.getFrame(0, 3, 16, 1),
+    sun: grid.getFrame(13, 6, 3, 3),
+    dock: grid.getFrame(11, 11, 5, 3),
+    lantern: grid.getFrame(6, 8, 2, 3),
+    puddle1: grid.getFrame(0, 14, 3, 2),
+    puddle2: grid.getFrame(3, 14, 3, 2),
+    garbage: grid.getFrame(6, 15, 4, 1),
   },
   meta: {
     scale: '1',
@@ -183,7 +130,7 @@ export class Environment extends PIXI.Container {
   dock = new Dock(500, 200);
   lantern = new Lantern(350, 150);
   puddle1 = new Puddle1(350, 500);
-  puddle2 = new Puddle2(100, 200);
+  puddle2 = new Puddle2(100, 174);
   garbage = new Garbage(270, 350);
 
   constructor() {

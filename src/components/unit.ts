@@ -1,43 +1,18 @@
 import * as PIXI from 'pixi.js';
 import idleImg from '../assets/sci-fi/bot-wheel/charge.png';
+import { SpriteGrid } from '../utils/sprite';
 
 const idleTexture = PIXI.Texture.from(idleImg);
 idleTexture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
+const grid = new SpriteGrid(117, 26);
+
 const idleSprite = new PIXI.Spritesheet(idleTexture, {
   frames: {
-    frame0: {
-      frame: {
-        x: 12,
-        y: 0,
-        w: 24,
-        h: 26,
-      },
-    },
-    frame1: {
-      frame: {
-        x: 12,
-        y: 26,
-        w: 24,
-        h: 26,
-      },
-    },
-    frame2: {
-      frame: {
-        x: 12,
-        y: 52,
-        w: 24,
-        h: 26,
-      },
-    },
-    frame3: {
-      frame: {
-        x: 12,
-        y: 78,
-        w: 24,
-        h: 26,
-      },
-    },
+    frame0: grid.getFrame(0, 0, 1, 1),
+    frame1: grid.getFrame(0, 1, 1, 1),
+    frame2: grid.getFrame(0, 2, 1, 1),
+    frame3: grid.getFrame(0, 3, 1, 1),
   },
   meta: {
     scale: '1',
