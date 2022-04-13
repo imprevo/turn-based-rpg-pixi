@@ -1,9 +1,8 @@
 import * as PIXI from 'pixi.js';
 import { Environment } from './components/environment';
 import { Unit } from './components/unit';
-import planetOneTexture from './assets/sci-fi/planet-one.png';
-import idleImg from './assets/sci-fi/bot-wheel/charge.png';
-import { SpriteGrid } from './utils/sprite';
+import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
+import { UnitSpritesheetBuilder } from './services/spritesheet/unit-builder';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -13,52 +12,14 @@ export const app = new PIXI.Application({
   height: 600,
 });
 
-function makePlanetShpriteSheet() {
-  const texture = PIXI.Texture.from(planetOneTexture);
+function loadTextures() {
+  const parsers = [
+    new UnitSpritesheetBuilder(),
+    new PlanetSpritesheetBuilder(),
+  ];
+  const loading = parsers.map((parser) => parser.make());
 
-  const grid = new SpriteGrid(16, 16);
-
-  const sprite = new PIXI.Spritesheet(texture, {
-    frames: {
-      background: grid.getFrame(0, 0, 16, 3),
-      ground: grid.getFrame(0, 3, 16, 1),
-      sun: grid.getFrame(13, 6, 3, 3),
-      dock: grid.getFrame(11, 11, 5, 3),
-      lantern: grid.getFrame(6, 8, 2, 3),
-      puddle1: grid.getFrame(0, 14, 3, 2),
-      puddle2: grid.getFrame(3, 14, 3, 2),
-      garbage: grid.getFrame(6, 15, 4, 1),
-    },
-    meta: {
-      scale: '1',
-    },
-  });
-
-  // TODO: could it be removed?
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  sprite.parse(() => {});
-}
-
-function makeUnitSpritesheet() {
-  const idleTexture = PIXI.Texture.from(idleImg);
-
-  const grid = new SpriteGrid(117, 26);
-
-  const idleSprite = new PIXI.Spritesheet(idleTexture, {
-    frames: {
-      frame0: grid.getFrame(0, 0, 1, 1),
-      frame1: grid.getFrame(0, 1, 1, 1),
-      frame2: grid.getFrame(0, 2, 1, 1),
-      frame3: grid.getFrame(0, 3, 1, 1),
-    },
-    meta: {
-      scale: '1',
-    },
-  });
-
-  // TODO: could it be removed?
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  idleSprite.parse(() => {});
+  return Promise.all(loading);
 }
 
 function createComponents() {
@@ -81,8 +42,4 @@ function createComponents() {
   });
 }
 
-app.loader.add('planetOneTexture', planetOneTexture).load(() => {
-  makePlanetShpriteSheet();
-  makeUnitSpritesheet();
-  createComponents();
-});
+loadTextures().then(createComponents);
