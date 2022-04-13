@@ -1,35 +1,8 @@
 import * as PIXI from 'pixi.js';
-import planetOneTexture from '../assets/sci-fi/planet-one.png';
-import { SpriteGrid } from '../utils/sprite';
-
-const texture = PIXI.Texture.from(planetOneTexture);
-texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
-
-const grid = new SpriteGrid(16, 16);
-
-const sprite = new PIXI.Spritesheet(texture, {
-  frames: {
-    background: grid.getFrame(0, 0, 16, 3),
-    ground: grid.getFrame(0, 3, 16, 1),
-    sun: grid.getFrame(13, 6, 3, 3),
-    dock: grid.getFrame(11, 11, 5, 3),
-    lantern: grid.getFrame(6, 8, 2, 3),
-    puddle1: grid.getFrame(0, 14, 3, 2),
-    puddle2: grid.getFrame(3, 14, 3, 2),
-    garbage: grid.getFrame(6, 15, 4, 1),
-  },
-  meta: {
-    scale: '1',
-  },
-});
-
-// TODO: could it be removed?
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-sprite.parse(() => {});
 
 class Background extends PIXI.Sprite {
   constructor() {
-    super(sprite.textures.background);
+    super(PIXI.Texture.from('background'));
 
     this.x = 0;
     this.y = 0;
@@ -40,7 +13,7 @@ class Background extends PIXI.Sprite {
 
 class Ground extends PIXI.Sprite {
   constructor() {
-    super(sprite.textures.ground);
+    super(PIXI.Texture.from('ground'));
 
     this.x = 0;
     this.y = 220;
@@ -53,7 +26,7 @@ class Sun extends PIXI.Sprite {
   rotationSpeed = 0.002;
 
   constructor(x: number, y: number) {
-    super(sprite.textures.sun);
+    super(PIXI.Texture.from('sun'));
 
     this.x = x;
     this.y = y;
@@ -69,7 +42,7 @@ class Sun extends PIXI.Sprite {
 
 class Dock extends PIXI.Sprite {
   constructor(x: number, y: number) {
-    super(sprite.textures.dock);
+    super(PIXI.Texture.from('dock'));
 
     this.x = x;
     this.y = y;
@@ -80,7 +53,7 @@ class Dock extends PIXI.Sprite {
 
 class Lantern extends PIXI.Sprite {
   constructor(x: number, y: number) {
-    super(sprite.textures.lantern);
+    super(PIXI.Texture.from('lantern'));
 
     this.x = x;
     this.y = y;
@@ -91,7 +64,7 @@ class Lantern extends PIXI.Sprite {
 
 class Puddle1 extends PIXI.Sprite {
   constructor(x: number, y: number) {
-    super(sprite.textures.puddle1);
+    super(PIXI.Texture.from('puddle1'));
 
     this.x = x;
     this.y = y;
@@ -102,7 +75,7 @@ class Puddle1 extends PIXI.Sprite {
 
 class Puddle2 extends PIXI.Sprite {
   constructor(x: number, y: number) {
-    super(sprite.textures.puddle2);
+    super(PIXI.Texture.from('puddle2'));
 
     this.x = x;
     this.y = y;
@@ -113,7 +86,7 @@ class Puddle2 extends PIXI.Sprite {
 
 class Garbage extends PIXI.Sprite {
   constructor(x: number, y: number) {
-    super(sprite.textures.garbage);
+    super(PIXI.Texture.from('garbage'));
 
     this.x = x;
     this.y = y;
@@ -136,14 +109,16 @@ export class Environment extends PIXI.Container {
   constructor() {
     super();
 
-    this.addChild(this.background);
-    this.addChild(this.ground);
-    this.addChild(this.sun);
-    this.addChild(this.dock);
-    this.addChild(this.lantern);
-    this.addChild(this.puddle1);
-    this.addChild(this.puddle2);
-    this.addChild(this.garbage);
+    this.addChild(
+      this.background,
+      this.ground,
+      this.sun,
+      this.dock,
+      this.lantern,
+      this.puddle1,
+      this.puddle2,
+      this.garbage
+    );
   }
 
   update() {
