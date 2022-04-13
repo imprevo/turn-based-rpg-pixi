@@ -94,12 +94,33 @@ class UnitAnimation extends PIXI.Container {
   currentAnimation?: PIXI.AnimatedSprite;
 
   runAnimation(animationState: UnitAnimationState) {
-    // if (this.animationState === animationState) return;
+    if (this.animationState === animationState) return;
+
+    this.removeAnimation();
+    this.initAnimation(animationState);
+  }
+
+  removeAnimation() {
+    if (this.currentAnimation) {
+      this.currentAnimation.stop();
+      this.removeChild(this.currentAnimation);
+    }
+  }
+
+  initAnimation(animationState: UnitAnimationState) {
+    const currentAnimation = this.createAnimation(animationState);
+    const nextAnimationState = this.getTransitionAnimationState(animationState);
+
+    if (nextAnimationState !== null) {
+      currentAnimation.onComplete = () => {
+        this.runAnimation(nextAnimationState);
+      };
+    }
+
+    currentAnimation.play();
+    this.addChild(currentAnimation);
 
     this.animationState = animationState;
-    const currentAnimation = this.createAnimation(animationState);
-    currentAnimation.gotoAndPlay(0);
-    this.addChild(currentAnimation);
     this.currentAnimation = currentAnimation;
   }
 
@@ -119,6 +140,23 @@ class UnitAnimation extends PIXI.Container {
         throw new Error(`Unknown animation state: ${animationState}`);
     }
   }
+
+  getTransitionAnimationState(animationState: UnitAnimationState) {
+    switch (animationState) {
+      case UnitAnimationState.WAKE:
+        return UnitAnimationState.IDLE;
+      case UnitAnimationState.IDLE:
+        return null;
+      case UnitAnimationState.SHOOT:
+        return UnitAnimationState.IDLE;
+      case UnitAnimationState.DAMAGED:
+        return UnitAnimationState.IDLE;
+      case UnitAnimationState.DEATH:
+        return null;
+      default:
+        throw new Error(`Unknown animation state: ${animationState}`);
+    }
+  }
 }
 
 export class Unit extends PIXI.Container {
@@ -131,7 +169,7 @@ export class Unit extends PIXI.Container {
     this.y = y;
 
     this.unitAnimation.scale.x *= flip ? -1 : 1;
-    this.unitAnimation.runAnimation(UnitAnimationState.IDLE);
+    this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
     this.addChild(this.unitAnimation);
   }
 }
