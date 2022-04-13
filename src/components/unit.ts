@@ -81,16 +81,57 @@ class WakeAnimationSprite extends PIXI.AnimatedSprite {
   }
 }
 
+enum UnitAnimationState {
+  IDLE,
+  DEATH,
+  DAMAGED,
+  SHOOT,
+  WAKE,
+}
+
+class UnitAnimation extends PIXI.Container {
+  animationState?: UnitAnimationState;
+  currentAnimation?: PIXI.AnimatedSprite;
+
+  runAnimation(animationState: UnitAnimationState) {
+    // if (this.animationState === animationState) return;
+
+    this.animationState = animationState;
+    const currentAnimation = this.createAnimation(animationState);
+    currentAnimation.gotoAndPlay(0);
+    this.addChild(currentAnimation);
+    this.currentAnimation = currentAnimation;
+  }
+
+  createAnimation(animationState: UnitAnimationState) {
+    switch (animationState) {
+      case UnitAnimationState.WAKE:
+        return new WakeAnimationSprite();
+      case UnitAnimationState.IDLE:
+        return new IdleAnimationSprite();
+      case UnitAnimationState.SHOOT:
+        return new ShootAnimationSprite();
+      case UnitAnimationState.DAMAGED:
+        return new DamagedAnimationSprite();
+      case UnitAnimationState.DEATH:
+        return new DeathAnimationSprite();
+      default:
+        throw new Error(`Unknown animation state: ${animationState}`);
+    }
+  }
+}
+
 export class Unit extends PIXI.Container {
+  unitAnimation = new UnitAnimation();
+
   constructor(x: number, y: number, flip?: boolean) {
     super();
 
     this.x = x;
     this.y = y;
 
-    const sprite = new IdleAnimationSprite();
-    sprite.scale.x *= flip ? -1 : 1;
-    sprite.gotoAndPlay(0);
-    this.addChild(sprite);
+    this.unitAnimation.scale.x *= flip ? -1 : 1;
+    this.unitAnimation.runAnimation(UnitAnimationState.IDLE);
+    this.addChild(this.unitAnimation);
   }
 }
