@@ -17,6 +17,10 @@ export class UnitSpritesheetBuilder extends SpritesheetBuilder {
         frame2: this.grid.getFrame(0, 2, 1, 1),
         frame3: this.grid.getFrame(0, 3, 1, 1),
       },
+      // TODO: how to use it in components?
+      animations: {
+        idle: ['frame0', 'frame1', 'frame2', 'frame3'],
+      },
       meta: {
         scale: '1',
       },
