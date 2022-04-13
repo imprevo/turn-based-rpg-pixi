@@ -2,7 +2,13 @@ import * as PIXI from 'pixi.js';
 import { Environment } from './components/environment';
 import { Unit } from './components/unit';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
-import { UnitSpritesheetBuilder } from './services/spritesheet/unit-builder';
+import {
+  UnitDamagedSpritesheetBuilder,
+  UnitDeathSpritesheetBuilder,
+  UnitIdleSpritesheetBuilder,
+  UnitShootSpritesheetBuilder,
+  UnitWakeSpritesheetBuilder,
+} from './services/spritesheet/unit-builder';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -14,8 +20,12 @@ export const app = new PIXI.Application({
 
 function loadTextures() {
   const parsers = [
-    new UnitSpritesheetBuilder(),
     new PlanetSpritesheetBuilder(),
+    new UnitIdleSpritesheetBuilder(),
+    new UnitDeathSpritesheetBuilder(),
+    new UnitDamagedSpritesheetBuilder(),
+    new UnitShootSpritesheetBuilder(),
+    new UnitWakeSpritesheetBuilder(),
   ];
   const loading = parsers.map((parser) => parser.make());
 
