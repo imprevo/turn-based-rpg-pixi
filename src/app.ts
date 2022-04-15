@@ -64,6 +64,10 @@ function createComponents() {
   const actions = new ActionButtons();
   app.stage.addChild(actions);
 
+  actions.on('attack', () => console.log('attack!'));
+  actions.on('defence', () => console.log('defence!'));
+  actions.on('heal', () => console.log('heal!'));
+
   app.ticker.add(() => {
     environment.update();
   });

@@ -34,7 +34,6 @@ class BaseButton extends PIXI.Sprite {
     this.isDown = false;
     if (this.isOver) {
       this.setHover();
-      console.log('click!');
     } else {
       this.setDefault();
     }
@@ -91,8 +90,8 @@ class PlusButton extends BaseButton {
 
 export class ActionButtons extends PIXI.Container {
   attackButton = new AttackButton();
-  shieldButton = new ShieldButton();
-  plusButton = new PlusButton();
+  defenceButton = new ShieldButton();
+  healButton = new PlusButton();
 
   constructor() {
     super();
@@ -101,8 +100,28 @@ export class ActionButtons extends PIXI.Container {
     this.y = 550;
 
     this.attackButton.x = -64;
-    this.plusButton.x = 64;
+    this.healButton.x = 64;
 
-    this.addChild(this.attackButton, this.shieldButton, this.plusButton);
+    this.addChild(this.attackButton, this.defenceButton, this.healButton);
+
+    this.addListeners();
   }
+
+  addListeners() {
+    this.attackButton.on('click', this.doAttack);
+    this.defenceButton.on('click', this.doDefence);
+    this.healButton.on('click', this.doHeal);
+  }
+
+  doAttack = () => {
+    this.emit('attack');
+  };
+
+  doDefence = () => {
+    this.emit('defence');
+  };
+
+  doHeal = () => {
+    this.emit('heal');
+  };
 }
