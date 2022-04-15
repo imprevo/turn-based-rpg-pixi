@@ -10,6 +10,10 @@ import {
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
+import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
+import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
+import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
+import { ActionButtons } from './components/action-buttons';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -19,7 +23,15 @@ export const app = new PIXI.Application({
   height: 600,
 });
 
-function loadTextures() {
+function loadTextures(): Promise<void> {
+  app.loader.add('iconPlus', iconPlusImg);
+  app.loader.add('iconAttack', iconAttackImg);
+  app.loader.add('iconShield', iconShieldImg);
+
+  return new Promise((resolve) => app.loader.load(() => resolve()));
+}
+
+function loadSpritesheets() {
   const parsers = [
     new PlanetSpritesheetBuilder(),
     new UnitIdleSpritesheetBuilder(),
@@ -49,9 +61,12 @@ function createComponents() {
   basicText.y = 50;
   app.stage.addChild(basicText);
 
+  const actions = new ActionButtons();
+  app.stage.addChild(actions);
+
   app.ticker.add(() => {
     environment.update();
   });
 }
 
-loadTextures().then(createComponents);
+Promise.all([loadTextures(), loadSpritesheets()]).then(createComponents);
