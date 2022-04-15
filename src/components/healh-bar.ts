@@ -27,6 +27,7 @@ class HealthBarCell extends PIXI.Sprite {
     super(PIXI.Texture.from('barCell'));
 
     this.scale.set(2);
+    this.anchor;
   }
 }
 
@@ -74,6 +75,8 @@ export class HealthBar extends PIXI.Container {
     this.cells.y = 2;
 
     this.addChild(this.cells, this.wrapper);
+
+    this.pivot.set(this.width / 2, this.height / 2);
   }
 
   setCount(size: number) {

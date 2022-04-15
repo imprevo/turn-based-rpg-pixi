@@ -9,8 +9,7 @@ class IdleAnimationSprite extends PIXI.AnimatedSprite {
       PIXI.Texture.from('unitIdle2'),
       PIXI.Texture.from('unitIdle3'),
     ]);
-    this.scale.x = 3;
-    this.scale.y = 3;
+    this.scale.set(3);
     this.animationSpeed = 0.1;
     this.loop = true;
   }
@@ -26,8 +25,7 @@ class DeathAnimationSprite extends PIXI.AnimatedSprite {
       PIXI.Texture.from('unitDeath4'),
       PIXI.Texture.from('unitDeath5'),
     ]);
-    this.scale.x = 3;
-    this.scale.y = 3;
+    this.scale.set(3);
     this.animationSpeed = 0.1;
     this.loop = false;
   }
@@ -42,8 +40,7 @@ class DamagedAnimationSprite extends PIXI.AnimatedSprite {
       PIXI.Texture.from('unitDamaged1'),
       PIXI.Texture.from('unitDamaged0'),
     ]);
-    this.scale.x = 3;
-    this.scale.y = 3;
+    this.scale.set(3);
     this.animationSpeed = 0.1;
     this.loop = false;
   }
@@ -57,8 +54,7 @@ class ShootAnimationSprite extends PIXI.AnimatedSprite {
       PIXI.Texture.from('unitShoot2'),
       PIXI.Texture.from('unitShoot3'),
     ]);
-    this.scale.x = 3;
-    this.scale.y = 3;
+    this.scale.set(3);
     this.animationSpeed = 0.1;
     this.loop = false;
   }
@@ -75,8 +71,7 @@ class WakeAnimationSprite extends PIXI.AnimatedSprite {
       PIXI.Texture.from('unitWake3'),
       PIXI.Texture.from('unitWake4'),
     ]);
-    this.scale.x = 3;
-    this.scale.y = 3;
+    this.scale.set(3);
     this.animationSpeed = 0.1;
     this.loop = false;
   }
@@ -93,6 +88,10 @@ enum UnitAnimationState {
 class UnitAnimation extends PIXI.Container {
   animationState?: UnitAnimationState;
   currentAnimation?: PIXI.AnimatedSprite;
+
+  setFlip(flip: boolean) {
+    this.scale.x *= flip ? -1 : 1;
+  }
 
   runAnimation(animationState: UnitAnimationState) {
     if (this.animationState === animationState) return;
@@ -118,6 +117,7 @@ class UnitAnimation extends PIXI.Container {
       };
     }
 
+    currentAnimation.anchor.set(0.2, 0.5);
     currentAnimation.play();
     this.addChild(currentAnimation);
 
@@ -164,17 +164,16 @@ export class Unit extends PIXI.Container {
   unitAnimation = new UnitAnimation();
   healthBar = new HealthBar(10);
 
-  constructor(x: number, y: number, flip?: boolean) {
+  constructor(x: number, y: number, flip = false) {
     super();
 
     this.x = x;
     this.y = y;
 
-    this.unitAnimation.scale.x *= flip ? -1 : 1;
+    this.unitAnimation.setFlip(flip);
     this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
 
-    this.healthBar.x = 30;
-    this.healthBar.y = -10;
+    this.healthBar.y = -50;
     this.healthBar.setCount(5);
 
     this.addChild(this.unitAnimation, this.healthBar);

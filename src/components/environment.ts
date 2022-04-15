@@ -17,8 +17,7 @@ class Ground extends PIXI.Sprite {
 
     this.x = 0;
     this.y = 220;
-    this.scale.x = 4;
-    this.scale.y = 25;
+    this.scale.set(4, 25);
   }
 }
 
@@ -30,8 +29,7 @@ class Sun extends PIXI.Sprite {
 
     this.x = x;
     this.y = y;
-    this.scale.x = 2;
-    this.scale.y = 2;
+    this.scale.set(2);
     this.anchor.set(0.5);
   }
 
