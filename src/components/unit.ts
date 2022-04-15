@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { HealthBar } from './healh-bar';
 
 class IdleAnimationSprite extends PIXI.AnimatedSprite {
   constructor() {
@@ -161,6 +162,7 @@ class UnitAnimation extends PIXI.Container {
 
 export class Unit extends PIXI.Container {
   unitAnimation = new UnitAnimation();
+  healthBar = new HealthBar(10);
 
   constructor(x: number, y: number, flip?: boolean) {
     super();
@@ -170,6 +172,11 @@ export class Unit extends PIXI.Container {
 
     this.unitAnimation.scale.x *= flip ? -1 : 1;
     this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
-    this.addChild(this.unitAnimation);
+
+    this.healthBar.x = 30;
+    this.healthBar.y = -10;
+    this.healthBar.setCount(5);
+
+    this.addChild(this.unitAnimation, this.healthBar);
   }
 }

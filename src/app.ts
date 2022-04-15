@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { Environment } from './components/environment';
 import { Unit } from './components/unit';
+import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
   UnitDamagedSpritesheetBuilder,
@@ -26,6 +27,7 @@ function loadTextures() {
     new UnitDamagedSpritesheetBuilder(),
     new UnitShootSpritesheetBuilder(),
     new UnitWakeSpritesheetBuilder(),
+    new LifeBarBuilder(),
   ];
   const loading = parsers.map((parser) => parser.make());
 
