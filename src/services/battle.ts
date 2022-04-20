@@ -1,6 +1,6 @@
 import { Unit } from '../models/unit';
 
-export class Battle {
+export class BattleService {
   player: Unit;
   enemy: Unit;
 
