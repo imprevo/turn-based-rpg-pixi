@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
-import { HealthBar } from './healh-bar';
+import { Unit } from '../models/unit';
+import { HealthBarComponent } from './healh-bar';
 
 class IdleAnimationSprite extends PIXI.AnimatedSprite {
   constructor() {
@@ -160,22 +161,45 @@ class UnitAnimation extends PIXI.Container {
   }
 }
 
-export class Unit extends PIXI.Container {
+export class UnitComponent extends PIXI.Container {
   unitAnimation = new UnitAnimation();
-  healthBar = new HealthBar(10);
+  healthBar: HealthBarComponent;
+  unit: Unit;
 
-  constructor(x: number, y: number, flip = false) {
+  constructor(x: number, y: number, flip = false, unit: Unit) {
     super();
 
+    this.unit = unit;
     this.x = x;
     this.y = y;
 
+    this.healthBar = this.initHealthbar(unit);
+    this.updateHealthbar();
+    this.initAnimation(flip);
+    this.addListeners();
+    this.addChild(this.unitAnimation, this.healthBar);
+  }
+
+  initHealthbar(unit: Unit) {
+    const healthBar = new HealthBarComponent(unit.stats.hpMax);
+    healthBar.y = -50;
+    return healthBar;
+  }
+
+  initAnimation(flip: boolean) {
     this.unitAnimation.setFlip(flip);
     this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
+  }
 
-    this.healthBar.y = -50;
-    this.healthBar.setCount(5);
+  addListeners() {
+    this.unit.on('change', this.handleUnitChange);
+  }
 
-    this.addChild(this.unitAnimation, this.healthBar);
+  handleUnitChange = () => {
+    this.updateHealthbar();
+  };
+
+  updateHealthbar() {
+    this.healthBar.setCount(this.unit.stats.hp);
   }
 }

@@ -61,7 +61,7 @@ class HealthBarCells extends PIXI.Container {
   }
 }
 
-export class HealthBar extends PIXI.Container {
+export class HealthBarComponent extends PIXI.Container {
   wrapper: HealthBarWrapper;
   cells: HealthBarCells;
 

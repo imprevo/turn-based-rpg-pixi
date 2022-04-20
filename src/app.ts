@@ -1,6 +1,11 @@
 import * as PIXI from 'pixi.js';
-import { Environment } from './components/environment';
-import { Unit } from './components/unit';
+import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
+import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
+import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
+import { ActionButtonsComponent } from './components/action-buttons';
+import { EnvironmentComponent } from './components/environment';
+import { UnitComponent } from './components/unit';
+import { Battle } from './models/battle';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
@@ -10,10 +15,6 @@ import {
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
-import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
-import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
-import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
-import { ActionButtons } from './components/action-buttons';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -47,13 +48,20 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const environment = new Environment();
+  const battle = new Battle();
+
+  const player = battle.player;
+  const enemy = battle.enemy;
+
+  // battle.init();
+
+  const environment = new EnvironmentComponent();
   app.stage.addChild(environment);
 
-  const unit1 = new Unit(100, 400);
+  const unit1 = new UnitComponent(100, 400, false, player);
   app.stage.addChild(unit1);
 
-  const unit2 = new Unit(700, 400, true);
+  const unit2 = new UnitComponent(700, 400, true, enemy);
   app.stage.addChild(unit2);
 
   const basicText = new PIXI.Text('Turn-based RPG');
@@ -61,12 +69,19 @@ function createComponents() {
   basicText.y = 50;
   app.stage.addChild(basicText);
 
-  const actions = new ActionButtons();
+  const actions = new ActionButtonsComponent();
   app.stage.addChild(actions);
 
-  actions.on('attack', () => console.log('attack!'));
-  actions.on('defence', () => console.log('defence!'));
-  actions.on('heal', () => console.log('heal!'));
+  actions.on('attack', () => {
+    // player.attack(enemy);
+    enemy.attack(player);
+  });
+  actions.on('defence', () => {
+    player.defense();
+  });
+  actions.on('heal', () => {
+    player.heal(1);
+  });
 
   app.ticker.add(() => {
     environment.update();

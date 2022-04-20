@@ -88,7 +88,7 @@ class PlusButton extends BaseButton {
   }
 }
 
-export class ActionButtons extends PIXI.Container {
+export class ActionButtonsComponent extends PIXI.Container {
   attackButton = new AttackButton();
   defenceButton = new ShieldButton();
   healButton = new PlusButton();

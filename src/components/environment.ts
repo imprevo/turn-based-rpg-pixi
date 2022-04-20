@@ -94,7 +94,7 @@ class Garbage extends PIXI.Sprite {
 }
 
 // TODO: get canvas size and scale from arguments?
-export class Environment extends PIXI.Container {
+export class EnvironmentComponent extends PIXI.Container {
   background = new Background();
   ground = new Ground();
   sun = new Sun(680, 50);
