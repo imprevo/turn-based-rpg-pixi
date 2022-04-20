@@ -3,9 +3,10 @@ import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
 import { ActionButtonsComponent } from './components/action-buttons';
+import { GameOverComponent } from './components/game-over';
 import { EnvironmentComponent } from './components/environment';
 import { UnitComponent } from './components/unit';
-import { Battle } from './models/battle';
+import { Battle } from './services/battle';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
@@ -15,6 +16,7 @@ import {
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
+import { wait } from './utils/promise';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -53,8 +55,6 @@ function createComponents() {
   const player = battle.player;
   const enemy = battle.enemy;
 
-  // battle.init();
-
   const environment = new EnvironmentComponent();
   app.stage.addChild(environment);
 
@@ -64,23 +64,47 @@ function createComponents() {
   const unit2 = new UnitComponent(700, 400, true, enemy);
   app.stage.addChild(unit2);
 
-  const basicText = new PIXI.Text('Turn-based RPG');
-  basicText.x = 50;
-  basicText.y = 50;
-  app.stage.addChild(basicText);
+  const gameOverMessage = new GameOverComponent();
+  app.stage.addChild(gameOverMessage);
 
   const actions = new ActionButtonsComponent();
   app.stage.addChild(actions);
 
-  actions.on('attack', () => {
-    // player.attack(enemy);
+  function showActions(visible: boolean) {
+    actions.visible = visible;
+  }
+
+  async function enemyTurn() {
+    await wait(500);
     enemy.attack(player);
+    if (player.isDie) {
+      gameOverMessage.showLoseMessage();
+    } else {
+      await wait(500);
+      showActions(true);
+    }
+  }
+
+  function playerTurn() {
+    showActions(false);
+    if (enemy.isDie) {
+      gameOverMessage.showWinMessage();
+    } else {
+      enemyTurn();
+    }
+  }
+
+  actions.on('attack', () => {
+    player.attack(enemy);
+    playerTurn();
   });
   actions.on('defence', () => {
     player.defense();
+    playerTurn();
   });
   actions.on('heal', () => {
     player.heal(1);
+    playerTurn();
   });
 
   app.ticker.add(() => {
