@@ -49,11 +49,7 @@ export class GameOverComponent extends PIXI.Container {
     this.visible = true;
   }
 
-  showWinMessage() {
-    this.show('You WIN!');
-  }
-
-  showLoseMessage() {
-    this.show('You LOSE!');
+  showMessage(teamName: string) {
+    this.show(`${teamName} team wins!`);
   }
 }

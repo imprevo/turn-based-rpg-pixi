@@ -20,18 +20,18 @@ export class AIController {
     });
   }
 
-  async enemyTurn() {
+  async doTurn() {
     await wait(500);
     this.battle.doTurn(this.aiTeam, () => {
-      const player = this.battle.getOpponentTeam(this.aiTeam);
-      this.aiTeam.attack(player);
+      const target = this.battle.getOpponentTeam(this.aiTeam);
+      this.aiTeam.attack(target);
     });
     await wait(500);
   }
 
   checkTurn() {
     if (this.battle.currentTeam === this.aiTeam) {
-      this.enemyTurn();
+      this.doTurn();
     }
   }
 }

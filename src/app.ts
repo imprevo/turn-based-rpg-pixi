@@ -48,12 +48,13 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const playerTeam = new Unit('Player', 5, 2);
-  const enemyTeam = new Unit('Enemy', 5, 2);
-  const battle = new BattleService([playerTeam, enemyTeam]);
-  const ai = new AIController(battle, enemyTeam);
+  const team1 = new Unit('Left', 5, 2);
+  const team2 = new Unit('Right', 5, 2);
+  const battle = new BattleService([team1, team2]);
+  // const ai1 = new AIController(battle, team1);
+  const ai2 = new AIController(battle, team2);
 
-  const battleComponent = new BattleComponent(battle, playerTeam);
+  const battleComponent = new BattleComponent(battle, team1);
 
   app.stage.addChild(battleComponent);
 

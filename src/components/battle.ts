@@ -8,17 +8,17 @@ import { Unit } from '../models/unit';
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
-  playerTeam: Unit;
+  controlledTeam?: Unit;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
 
-  constructor(battle: BattleService, team: Unit) {
+  constructor(battle: BattleService, controlledTeam?: Unit) {
     super();
 
     this.battle = battle;
-    this.playerTeam = team;
+    this.controlledTeam = controlledTeam;
 
     const unit1 = new UnitComponent(100, 400, false, battle.team1);
     const unit2 = new UnitComponent(700, 400, true, battle.team2);
@@ -45,30 +45,31 @@ export class BattleComponent extends PIXI.Container {
     });
     this.battle.on('gameopver', (winner: Unit) => {
       this.showActions(false);
-
-      if (winner === this.playerTeam) {
-        this.gameOverMessage.showWinMessage();
-      } else {
-        this.gameOverMessage.showLoseMessage();
-      }
+      this.gameOverMessage.showMessage(winner.name);
     });
 
+    if (this.controlledTeam) {
+      this.addActionLesteners(this.controlledTeam);
+    }
+  }
+
+  addActionLesteners(controlledTeam: Unit) {
     this.actions.on('attack', () => {
-      this.battle.doTurn(this.playerTeam, () => {
-        const enemy = this.battle.getOpponentTeam(this.playerTeam);
-        this.playerTeam.attack(enemy);
+      this.battle.doTurn(controlledTeam, () => {
+        const target = this.battle.getOpponentTeam(controlledTeam);
+        controlledTeam.attack(target);
       });
     });
     this.actions.on('defence', () => {
-      this.battle.doTurn(this.playerTeam, () => this.playerTeam.defense());
+      this.battle.doTurn(controlledTeam, () => controlledTeam.defense());
     });
     this.actions.on('heal', () => {
-      this.battle.doTurn(this.playerTeam, () => this.playerTeam.heal(1));
+      this.battle.doTurn(controlledTeam, () => controlledTeam.heal(1));
     });
   }
 
   checkTurn() {
-    this.showActions(this.battle.currentTeam === this.playerTeam);
+    this.showActions(this.battle.currentTeam === this.controlledTeam);
   }
 
   showActions(visible: boolean) {
