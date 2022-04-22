@@ -4,7 +4,6 @@ import { GameOverComponent } from './game-over';
 import { EnvironmentComponent } from './environment';
 import { UnitComponent } from './unit';
 import { BattleService } from '../services/battle';
-import { wait } from '../utils/promise';
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
@@ -47,38 +46,29 @@ export class BattleComponent extends PIXI.Container {
   }
 
   addListeners() {
+    this.battle.on('turnEnd', () => {
+      this.showActions(this.battle.current === 'player');
+    });
+    this.battle.on('gameopver', () => {
+      if (this.battle.current === 'player') {
+        this.gameOverMessage.showWinMessage();
+      } else {
+        this.gameOverMessage.showLoseMessage();
+      }
+    });
+
     this.actions.on('attack', () => {
       this.player.attack(this.enemy);
-      this.playerTurn();
+      this.battle.playerTurn();
     });
     this.actions.on('defence', () => {
       this.player.defense();
-      this.playerTurn();
+      this.battle.playerTurn();
     });
     this.actions.on('heal', () => {
       this.player.heal(1);
-      this.playerTurn();
+      this.battle.playerTurn();
     });
-  }
-
-  playerTurn() {
-    this.showActions(false);
-    if (this.enemy.isDie) {
-      this.gameOverMessage.showWinMessage();
-    } else {
-      this.enemyTurn();
-    }
-  }
-
-  async enemyTurn() {
-    await wait(500);
-    this.enemy.attack(this.player);
-    if (this.player.isDie) {
-      this.gameOverMessage.showLoseMessage();
-    } else {
-      await wait(500);
-      this.showActions(true);
-    }
   }
 
   showActions(visible: boolean) {
