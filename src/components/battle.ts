@@ -4,16 +4,17 @@ import { GameOverComponent } from './game-over';
 import { EnvironmentComponent } from './environment';
 import { UnitComponent } from './unit';
 import { BattleService } from '../services/battle';
+import { Unit } from '../models/unit';
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
-  playerTeam: number;
+  playerTeam: Unit;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
 
-  constructor(battle: BattleService, team: number) {
+  constructor(battle: BattleService, team: Unit) {
     super();
 
     this.battle = battle;
@@ -34,14 +35,6 @@ export class BattleComponent extends PIXI.Container {
     this.addListeners();
   }
 
-  get player() {
-    return this.playerTeam === 0 ? this.battle.team1 : this.battle.team2;
-  }
-
-  get enemy() {
-    return this.playerTeam === 0 ? this.battle.team2 : this.battle.team1;
-  }
-
   update() {
     this.environment.update();
   }
@@ -50,8 +43,9 @@ export class BattleComponent extends PIXI.Container {
     this.battle.on('turnEnd', () => {
       this.checkTurn();
     });
-    this.battle.on('gameopver', (winner) => {
+    this.battle.on('gameopver', (winner: Unit) => {
       this.showActions(false);
+
       if (winner === this.playerTeam) {
         this.gameOverMessage.showWinMessage();
       } else {
@@ -60,13 +54,16 @@ export class BattleComponent extends PIXI.Container {
     });
 
     this.actions.on('attack', () => {
-      this.battle.doTurn(this.playerTeam, () => this.player.attack(this.enemy));
+      this.battle.doTurn(this.playerTeam, () => {
+        const enemy = this.battle.getOpponentTeam(this.playerTeam);
+        this.playerTeam.attack(enemy);
+      });
     });
     this.actions.on('defence', () => {
-      this.battle.doTurn(this.playerTeam, () => this.player.defense());
+      this.battle.doTurn(this.playerTeam, () => this.playerTeam.defense());
     });
     this.actions.on('heal', () => {
-      this.battle.doTurn(this.playerTeam, () => this.player.heal(1));
+      this.battle.doTurn(this.playerTeam, () => this.playerTeam.heal(1));
     });
   }
 

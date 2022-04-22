@@ -50,17 +50,10 @@ function loadSpritesheets() {
 function createComponents() {
   const playerTeam = new Unit('Player', 5, 2);
   const enemyTeam = new Unit('Enemy', 5, 2);
-  const teams: [Unit, Unit] = [enemyTeam, playerTeam];
-  const battle = new BattleService(teams);
-  const ai = new AIController(
-    battle,
-    teams.findIndex((v) => v === enemyTeam)
-  );
+  const battle = new BattleService([playerTeam, enemyTeam]);
+  const ai = new AIController(battle, enemyTeam);
 
-  const battleComponent = new BattleComponent(
-    battle,
-    teams.findIndex((v) => v === playerTeam)
-  );
+  const battleComponent = new BattleComponent(battle, playerTeam);
 
   app.stage.addChild(battleComponent);
 

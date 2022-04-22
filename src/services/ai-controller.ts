@@ -1,24 +1,17 @@
 import { BattleService } from './battle';
 import { wait } from '../utils/promise';
+import { Unit } from '../models/unit';
 
 export class AIController {
   battle: BattleService;
-  aiTeam: number;
+  aiTeam: Unit;
 
-  constructor(battle: BattleService, team: number) {
+  constructor(battle: BattleService, team: Unit) {
     this.aiTeam = team;
     this.battle = battle;
 
     this.checkTurn();
     this.addListeners();
-  }
-
-  get player() {
-    return this.aiTeam === 0 ? this.battle.team2 : this.battle.team1;
-  }
-
-  get enemy() {
-    return this.aiTeam === 0 ? this.battle.team1 : this.battle.team2;
   }
 
   addListeners() {
@@ -29,7 +22,10 @@ export class AIController {
 
   async enemyTurn() {
     await wait(500);
-    this.battle.doTurn(this.aiTeam, () => this.enemy.attack(this.player));
+    this.battle.doTurn(this.aiTeam, () => {
+      const player = this.battle.getOpponentTeam(this.aiTeam);
+      this.aiTeam.attack(player);
+    });
     await wait(500);
   }
 

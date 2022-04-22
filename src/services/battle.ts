@@ -4,18 +4,21 @@ import { Unit } from '../models/unit';
 export class BattleService extends PIXI.utils.EventEmitter<
   'turnEnd' | 'gameopver'
 > {
+  teams: [Unit, Unit];
   team1: Unit;
   team2: Unit;
 
-  currentTeam = 0;
+  currentTeam: Unit;
 
   constructor(teams: [Unit, Unit]) {
     super();
+    this.teams = teams;
     this.team1 = teams[0];
     this.team2 = teams[1];
+    this.currentTeam = this.team1;
   }
 
-  doTurn(team: number, action: () => void) {
+  doTurn(team: Unit, action: () => void) {
     if (this.currentTeam !== team) {
       throw new Error('Not your turn!');
     }
@@ -28,18 +31,26 @@ export class BattleService extends PIXI.utils.EventEmitter<
     }
   }
 
-  checkWinner() {
+  checkWinner(): Unit | null {
     if (this.team1.isDie) {
-      return 1;
+      return this.team2;
     }
     if (this.team2.isDie) {
-      return 0;
+      return this.team1;
     }
     return null;
   }
 
   endTurn() {
-    this.currentTeam = this.currentTeam === 0 ? 1 : 0;
+    this.currentTeam = this.getNextTeam();
     this.emit('turnEnd');
+  }
+
+  getNextTeam() {
+    return this.getOpponentTeam(this.currentTeam);
+  }
+
+  getOpponentTeam(team: Unit) {
+    return this.teams.find((t) => t !== team) as Unit;
   }
 }
