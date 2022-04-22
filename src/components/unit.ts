@@ -164,6 +164,7 @@ class UnitAnimation extends PIXI.Container {
 export class UnitComponent extends PIXI.Container {
   unitAnimation = new UnitAnimation();
   healthBar: HealthBarComponent;
+  unitName: PIXI.Text;
   unit: Unit;
 
   constructor(x: number, y: number, flip = false, unit: Unit) {
@@ -174,16 +175,24 @@ export class UnitComponent extends PIXI.Container {
     this.y = y;
 
     this.healthBar = this.initHealthbar(unit);
+    this.unitName = this.initName(unit);
     this.updateHealthbar();
     this.initAnimation(flip);
     this.addListeners();
-    this.addChild(this.unitAnimation, this.healthBar);
+    this.addChild(this.unitAnimation, this.healthBar, this.unitName);
   }
 
   initHealthbar(unit: Unit) {
     const healthBar = new HealthBarComponent(unit.stats.hpMax);
     healthBar.y = -50;
     return healthBar;
+  }
+
+  initName(unit: Unit) {
+    const text = new PIXI.Text(unit.name, { fontSize: 14 });
+    text.y = -70;
+    text.anchor.set(0.5);
+    return text;
   }
 
   initAnimation(flip: boolean) {

@@ -13,6 +13,8 @@ import {
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
 import { BattleComponent } from './components/battle';
+import { AIController } from './services/ai-controller';
+import { Unit } from './models/unit';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -46,8 +48,19 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const battle = new BattleService();
-  const battleComponent = new BattleComponent(battle);
+  const playerTeam = new Unit('Player', 5, 2);
+  const enemyTeam = new Unit('Enemy', 5, 2);
+  const teams: [Unit, Unit] = [enemyTeam, playerTeam];
+  const battle = new BattleService(teams);
+  const ai = new AIController(
+    battle,
+    teams.findIndex((v) => v === enemyTeam)
+  );
+
+  const battleComponent = new BattleComponent(
+    battle,
+    teams.findIndex((v) => v === playerTeam)
+  );
 
   app.stage.addChild(battleComponent);
 

@@ -7,20 +7,20 @@ import { BattleService } from '../services/battle';
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
+  playerTeam: number;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
 
-  constructor(battle: BattleService) {
+  constructor(battle: BattleService, team: number) {
     super();
 
     this.battle = battle;
+    this.playerTeam = team;
 
-    const player = battle.player;
-    const enemy = battle.enemy;
-    const unit1 = new UnitComponent(100, 400, false, player);
-    const unit2 = new UnitComponent(700, 400, true, enemy);
+    const unit1 = new UnitComponent(100, 400, false, battle.team1);
+    const unit2 = new UnitComponent(700, 400, true, battle.team2);
 
     this.addChild(
       this.environment,
@@ -30,15 +30,16 @@ export class BattleComponent extends PIXI.Container {
       this.actions
     );
 
+    this.checkTurn();
     this.addListeners();
   }
 
   get player() {
-    return this.battle.player;
+    return this.playerTeam === 0 ? this.battle.team1 : this.battle.team2;
   }
 
   get enemy() {
-    return this.battle.enemy;
+    return this.playerTeam === 0 ? this.battle.team2 : this.battle.team1;
   }
 
   update() {
@@ -47,10 +48,11 @@ export class BattleComponent extends PIXI.Container {
 
   addListeners() {
     this.battle.on('turnEnd', () => {
-      this.showActions(this.battle.current === 'player');
+      this.checkTurn();
     });
-    this.battle.on('gameopver', () => {
-      if (this.battle.current === 'player') {
+    this.battle.on('gameopver', (winner) => {
+      this.showActions(false);
+      if (winner === this.playerTeam) {
         this.gameOverMessage.showWinMessage();
       } else {
         this.gameOverMessage.showLoseMessage();
@@ -58,17 +60,18 @@ export class BattleComponent extends PIXI.Container {
     });
 
     this.actions.on('attack', () => {
-      this.player.attack(this.enemy);
-      this.battle.playerTurn();
+      this.battle.doTurn(this.playerTeam, () => this.player.attack(this.enemy));
     });
     this.actions.on('defence', () => {
-      this.player.defense();
-      this.battle.playerTurn();
+      this.battle.doTurn(this.playerTeam, () => this.player.defense());
     });
     this.actions.on('heal', () => {
-      this.player.heal(1);
-      this.battle.playerTurn();
+      this.battle.doTurn(this.playerTeam, () => this.player.heal(1));
     });
+  }
+
+  checkTurn() {
+    this.showActions(this.battle.currentTeam === this.playerTeam);
   }
 
   showActions(visible: boolean) {
