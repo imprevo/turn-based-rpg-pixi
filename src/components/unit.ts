@@ -201,11 +201,22 @@ export class UnitComponent extends PIXI.Container {
   }
 
   addListeners() {
-    this.unit.on('change', this.handleUnitChange);
+    this.unit.on('changeStats', this.handleUnitChange);
+    this.unit.on('attack', this.handleUnitAttack);
   }
 
   handleUnitChange = () => {
     this.updateHealthbar();
+    if (this.unit.isDie) {
+      this.unitAnimation.runAnimation(UnitAnimationState.DEATH);
+    } else {
+      // TODO: runs on any stats changes. Not only health!
+      this.unitAnimation.runAnimation(UnitAnimationState.DAMAGED);
+    }
+  };
+
+  handleUnitAttack = () => {
+    this.unitAnimation.runAnimation(UnitAnimationState.SHOOT);
   };
 
   updateHealthbar() {

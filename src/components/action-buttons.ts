@@ -98,6 +98,7 @@ export class ActionButtonsComponent extends PIXI.Container {
 
     this.x = 400;
     this.y = 550;
+    this.visible = false;
 
     this.attackButton.x = -64;
     this.healButton.x = 64;

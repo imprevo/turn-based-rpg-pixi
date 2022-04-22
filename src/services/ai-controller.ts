@@ -2,6 +2,8 @@ import { BattleService } from './battle';
 import { wait } from '../utils/promise';
 import { Unit } from '../models/unit';
 
+const TURN_DELAY = 1000;
+
 export class AIController {
   battle: BattleService;
   aiTeam: Unit;
@@ -21,16 +23,15 @@ export class AIController {
   }
 
   async doTurn() {
-    await wait(500);
+    await wait(TURN_DELAY);
     this.battle.doTurn(this.aiTeam, () => {
       const target = this.battle.getOpponentTeam(this.aiTeam);
       this.aiTeam.attack(target);
     });
-    await wait(500);
   }
 
   checkTurn() {
-    if (this.battle.currentTeam === this.aiTeam) {
+    if (this.battle.checkIsTurnAvailable(this.aiTeam)) {
       this.doTurn();
     }
   }

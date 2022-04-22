@@ -14,7 +14,7 @@ export class Damage {
   constructor(public physicalDamage: number) {}
 }
 
-export class Unit extends PIXI.utils.EventEmitter {
+export class Unit extends PIXI.utils.EventEmitter<'changeStats' | 'attack'> {
   name: string;
   stats: Stats;
   damage: Damage;
@@ -31,18 +31,19 @@ export class Unit extends PIXI.utils.EventEmitter {
   attack(target: Unit) {
     this.isDefense = false;
     target.takeDamage(this.damage);
+    this.emit('attack');
   }
 
   takeDamage(damage: Damage) {
     this.stats.hp -= this.calculateDamage(damage);
     this.isDefense = false;
-    this.emit('change');
+    this.emit('changeStats');
   }
 
   heal(hp: number) {
     this.isDefense = false;
     this.stats.hp += hp;
-    this.emit('change');
+    this.emit('changeStats');
   }
 
   defense() {

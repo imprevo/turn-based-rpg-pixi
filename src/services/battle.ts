@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 import { Unit } from '../models/unit';
 
 export class BattleService extends PIXI.utils.EventEmitter<
-  'turnEnd' | 'gameopver'
+  'turnEnd' | 'gameover'
 > {
   teams: [Unit, Unit];
   team1: Unit;
@@ -25,7 +25,7 @@ export class BattleService extends PIXI.utils.EventEmitter<
     action();
     const winner = this.checkWinner();
     if (winner !== null) {
-      this.emit('gameopver', winner);
+      this.emit('gameover', winner);
     } else {
       this.endTurn();
     }
@@ -52,5 +52,9 @@ export class BattleService extends PIXI.utils.EventEmitter<
 
   getOpponentTeam(team: Unit) {
     return this.teams.find((t) => t !== team) as Unit;
+  }
+
+  checkIsTurnAvailable(team: Unit) {
+    return this.currentTeam === team;
   }
 }

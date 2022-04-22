@@ -5,6 +5,9 @@ import { EnvironmentComponent } from './environment';
 import { UnitComponent } from './unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
+import { wait } from '../utils/promise';
+
+const TURN_DELAY = 1000;
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
@@ -43,8 +46,9 @@ export class BattleComponent extends PIXI.Container {
     this.battle.on('turnEnd', () => {
       this.checkTurn();
     });
-    this.battle.on('gameopver', (winner: Unit) => {
+    this.battle.on('gameover', async (winner: Unit) => {
       this.showActions(false);
+      await wait(500);
       this.gameOverMessage.showMessage(winner.name);
     });
 
@@ -68,8 +72,16 @@ export class BattleComponent extends PIXI.Container {
     });
   }
 
-  checkTurn() {
-    this.showActions(this.battle.currentTeam === this.controlledTeam);
+  async checkTurn() {
+    if (
+      this.controlledTeam &&
+      this.battle.checkIsTurnAvailable(this.controlledTeam)
+    ) {
+      await wait(TURN_DELAY);
+      this.showActions(true);
+    } else {
+      this.showActions(false);
+    }
   }
 
   showActions(visible: boolean) {
