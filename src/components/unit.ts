@@ -184,13 +184,13 @@ export class UnitComponent extends PIXI.Container {
 
   initHealthbar(unit: Unit) {
     const healthBar = new HealthBarComponent(unit.stats.hpMax);
-    healthBar.y = -50;
+    healthBar.y = -40;
     return healthBar;
   }
 
   initName(unit: Unit) {
     const text = new PIXI.Text(unit.name, { fontSize: 14 });
-    text.y = -70;
+    text.y = -56;
     text.anchor.set(0.5);
     return text;
   }

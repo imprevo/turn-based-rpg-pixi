@@ -6,30 +6,27 @@ import { UnitComponent } from './unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
+import { Team } from '../models/team';
 
 const TURN_DELAY = 1000;
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
-  controlledTeam?: Unit;
+  controlledTeam?: Team;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
 
-  constructor(battle: BattleService, controlledTeam?: Unit) {
+  constructor(battle: BattleService, controlledTeam?: Team) {
     super();
 
     this.battle = battle;
     this.controlledTeam = controlledTeam;
 
-    const unit1 = new UnitComponent(100, 400, false, battle.team1);
-    const unit2 = new UnitComponent(700, 400, true, battle.team2);
-
     this.addChild(
       this.environment,
-      unit1,
-      unit2,
+      ...this.createUnitComponents(),
       this.gameOverMessage,
       this.actions
     );
@@ -57,19 +54,45 @@ export class BattleComponent extends PIXI.Container {
     }
   }
 
-  addActionLesteners(controlledTeam: Unit) {
+  addActionLesteners(controlledTeam: Team) {
     this.actions.on('attack', () => {
       this.battle.doTurn(controlledTeam, () => {
-        const target = this.battle.getOpponentTeam(controlledTeam);
-        controlledTeam.attack(target);
+        const targetTeam = this.battle.getOpponentTeam(controlledTeam);
+        const target = targetTeam.units.find((unit) => !unit.isDie);
+        const unit = controlledTeam.units.find((unit) => !unit.isDie);
+        unit!.attack(target!);
       });
     });
     this.actions.on('defence', () => {
-      this.battle.doTurn(controlledTeam, () => controlledTeam.defense());
+      this.battle.doTurn(controlledTeam, () => {
+        const unit = controlledTeam.units.find((unit) => !unit.isDie);
+        unit!.defense();
+      });
     });
     this.actions.on('heal', () => {
-      this.battle.doTurn(controlledTeam, () => controlledTeam.heal(1));
+      this.battle.doTurn(controlledTeam, () => {
+        const unit = controlledTeam.units.find((unit) => !unit.isDie);
+        unit!.heal(1);
+      });
     });
+  }
+
+  createUnitComponents() {
+    const components: UnitComponent[] = [];
+
+    this.battle.team1.units.forEach((unit, index) => {
+      const x = 100 + (index / 2) * 80;
+      const y = 400 + (index % 2) * 120;
+      components.push(new UnitComponent(x, y, false, unit));
+    });
+
+    this.battle.team2.units.forEach((unit, index) => {
+      const x = 700 - (index / 2) * 80;
+      const y = 400 + (index % 2) * 120;
+      components.push(new UnitComponent(x, y, true, unit));
+    });
+
+    return components;
   }
 
   async checkTurn() {

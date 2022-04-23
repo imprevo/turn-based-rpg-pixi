@@ -29,6 +29,9 @@ export class Unit extends PIXI.utils.EventEmitter<'changeStats' | 'attack'> {
   }
 
   attack(target: Unit) {
+    if (this.isDie) {
+      throw new Error('Unit is dead!');
+    }
     this.isDefense = false;
     target.takeDamage(this.damage);
     this.emit('attack');
@@ -41,12 +44,18 @@ export class Unit extends PIXI.utils.EventEmitter<'changeStats' | 'attack'> {
   }
 
   heal(hp: number) {
+    if (this.isDie) {
+      throw new Error('Unit is dead!');
+    }
     this.isDefense = false;
     this.stats.hp += hp;
     this.emit('changeStats');
   }
 
   defense() {
+    if (this.isDie) {
+      throw new Error('Unit is dead!');
+    }
     this.isDefense = true;
   }
 

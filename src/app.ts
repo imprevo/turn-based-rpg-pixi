@@ -15,6 +15,7 @@ import {
 import { BattleComponent } from './components/battle';
 import { AIController } from './services/ai-controller';
 import { Unit } from './models/unit';
+import { Team } from './models/team';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -48,8 +49,19 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const team1 = new Unit('Left', 5, 2);
-  const team2 = new Unit('Right', 5, 2);
+  const team1 = new Team('Left', [
+    new Unit('Left 1', 5, 2),
+    new Unit('Left 2', 5, 2),
+    new Unit('Left 3', 5, 2),
+    new Unit('Left 4', 5, 2),
+  ]);
+  const team2 = new Team('Right', [
+    new Unit('Right 1', 5, 2),
+    new Unit('Right 2', 5, 2),
+    new Unit('Right 3', 5, 2),
+    new Unit('Right 4', 5, 2),
+  ]);
+
   const battle = new BattleService([team1, team2]);
   // const ai1 = new AIController(battle, team1);
   const ai2 = new AIController(battle, team2);
