@@ -22,6 +22,7 @@ export class BattleService extends PIXI.utils.EventEmitter<
     if (this.currentTeam !== team) {
       throw new Error('Not your turn!');
     }
+    team.prepareForTurn();
     action();
     const winner = this.checkWinner();
     if (winner !== null) {
@@ -42,13 +43,8 @@ export class BattleService extends PIXI.utils.EventEmitter<
   }
 
   endTurn() {
-    this.currentTeam = this.getNextTeam();
-    this.currentTeam.setNextUnit();
+    this.currentTeam = this.getOpponentTeam(this.currentTeam);
     this.emit('turnEnd');
-  }
-
-  getNextTeam() {
-    return this.getOpponentTeam(this.currentTeam);
   }
 
   getOpponentTeam(team: Team) {

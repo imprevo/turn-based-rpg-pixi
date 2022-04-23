@@ -50,29 +50,29 @@ export class BattleComponent extends PIXI.Container {
     });
 
     if (this.controlledTeam) {
-      this.addActionLesteners(this.controlledTeam);
+      this.addActionListeners(this.controlledTeam);
     }
   }
 
-  addActionLesteners(controlledTeam: Team) {
+  addActionListeners(controlledTeam: Team) {
     this.actions.on('attack', () => {
       this.battle.doTurn(controlledTeam, () => {
         const targetTeam = this.battle.getOpponentTeam(controlledTeam);
         const target = targetTeam.units.find((unit) => !unit.isDie);
-        const unit = controlledTeam.units.find((unit) => !unit.isDie);
-        unit!.attack(target!);
+        const unit = controlledTeam.currentUnit;
+        unit.attack(target!);
       });
     });
     this.actions.on('defence', () => {
       this.battle.doTurn(controlledTeam, () => {
-        const unit = controlledTeam.units.find((unit) => !unit.isDie);
-        unit!.defense();
+        const unit = controlledTeam.currentUnit;
+        unit.defense();
       });
     });
     this.actions.on('heal', () => {
       this.battle.doTurn(controlledTeam, () => {
-        const unit = controlledTeam.units.find((unit) => !unit.isDie);
-        unit!.heal(1);
+        const unit = controlledTeam.currentUnit;
+        unit.heal(1);
       });
     });
   }
