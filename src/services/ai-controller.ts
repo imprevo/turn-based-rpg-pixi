@@ -38,7 +38,7 @@ export class AIController {
 
   findSomeTarget() {
     const targetTeam = this.battle.getOpponentTeam(this.aiTeam);
-    const unitsAlive = targetTeam.units.filter((unit) => !unit.isDie);
+    const unitsAlive = targetTeam.units.filter((unit) => !unit.isDead);
     return unitsAlive[this.getRandomInt(0, unitsAlive.length - 1)];
   }
 

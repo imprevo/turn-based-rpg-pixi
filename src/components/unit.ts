@@ -109,21 +109,21 @@ class UnitAnimation extends PIXI.Container {
   }
 
   initAnimation(animationState: UnitAnimationState) {
-    const currentAnimation = this.createAnimation(animationState);
+    const nextAnimation = this.createAnimation(animationState);
     const nextAnimationState = this.getTransitionAnimationState(animationState);
 
     if (nextAnimationState !== null) {
-      currentAnimation.onComplete = () => {
+      nextAnimation.onComplete = () => {
         this.runAnimation(nextAnimationState);
       };
     }
 
-    currentAnimation.anchor.set(0.2, 0.5);
-    currentAnimation.play();
-    this.addChild(currentAnimation);
+    nextAnimation.anchor.set(0.2, 0.5);
+    nextAnimation.play();
+    this.addChild(nextAnimation);
 
     this.animationState = animationState;
-    this.currentAnimation = currentAnimation;
+    this.currentAnimation = nextAnimation;
   }
 
   createAnimation(animationState: UnitAnimationState) {
@@ -161,9 +161,26 @@ class UnitAnimation extends PIXI.Container {
   }
 }
 
+class PickArea extends PIXI.Graphics {
+  constructor() {
+    super();
+
+    this.x = -25;
+    this.y = -35;
+    this.visible = false;
+    this.interactive = true;
+    this.buttonMode = true;
+
+    this.beginFill(0xf44336, 0.5);
+    this.drawRect(0, 0, 50, 80);
+    this.endFill();
+  }
+}
+
 export class UnitComponent extends PIXI.Container {
   unitAnimation = new UnitAnimation();
   healthBar: HealthBarComponent;
+  pickArea = new PickArea();
   unitName: PIXI.Text;
   unit: Unit;
 
@@ -179,7 +196,12 @@ export class UnitComponent extends PIXI.Container {
     this.updateHealthbar();
     this.initAnimation(flip);
     this.addListeners();
-    this.addChild(this.unitAnimation, this.healthBar, this.unitName);
+    this.addChild(
+      this.unitAnimation,
+      this.healthBar,
+      this.unitName,
+      this.pickArea
+    );
   }
 
   initHealthbar(unit: Unit) {
@@ -203,11 +225,12 @@ export class UnitComponent extends PIXI.Container {
   addListeners() {
     this.unit.on('changeStats', this.handleUnitChange);
     this.unit.on('attack', this.handleUnitAttack);
+    this.pickArea.on('click', this.handlePickUnit);
   }
 
   handleUnitChange = () => {
     this.updateHealthbar();
-    if (this.unit.isDie) {
+    if (this.unit.isDead) {
       this.unitAnimation.runAnimation(UnitAnimationState.DEATH);
     } else {
       // TODO: runs on any stats changes. Not only health!
@@ -219,7 +242,15 @@ export class UnitComponent extends PIXI.Container {
     this.unitAnimation.runAnimation(UnitAnimationState.SHOOT);
   };
 
+  handlePickUnit = () => {
+    this.emit('pick', this.unit);
+  };
+
   updateHealthbar() {
     this.healthBar.setCount(this.unit.stats.hp);
+  }
+
+  setPickable(pickable: boolean) {
+    this.pickArea.visible = pickable;
   }
 }

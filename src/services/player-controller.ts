@@ -27,9 +27,9 @@ export class PlayerController {
     });
   }
 
-  heal() {
+  heal(target: Unit) {
     this.battle.doTurn(this.team, () => {
-      this.currentUnit.heal(1);
+      target.heal();
     });
   }
 

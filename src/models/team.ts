@@ -22,7 +22,7 @@ export class Team {
   }
 
   isEveryoneDead() {
-    return this.units.every((unit) => unit.isDie);
+    return this.units.every((unit) => unit.isDead);
   }
 
   getNextUnit() {
@@ -33,7 +33,7 @@ export class Team {
     const nextAliveUnits = this.units
       .slice(currentUnitIndex + 1, this.units.length)
       .concat(this.units.slice(0, currentUnitIndex + 1))
-      .filter((unit) => !unit.isDie);
+      .filter((unit) => !unit.isDead);
 
     return nextAliveUnits[0];
   }
