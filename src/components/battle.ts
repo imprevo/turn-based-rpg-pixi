@@ -6,23 +6,23 @@ import { UnitComponent } from './unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
-import { Team } from '../models/team';
+import { PlayerController } from '../services/player-controller';
 
 const TURN_DELAY = 1000;
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
-  controlledTeam?: Team;
+  playerController?: PlayerController;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
 
-  constructor(battle: BattleService, controlledTeam?: Team) {
+  constructor(battle: BattleService, playerController?: PlayerController) {
     super();
 
     this.battle = battle;
-    this.controlledTeam = controlledTeam;
+    this.playerController = playerController;
 
     this.addChild(
       this.environment,
@@ -49,31 +49,22 @@ export class BattleComponent extends PIXI.Container {
       this.gameOverMessage.showMessage(winner.name);
     });
 
-    if (this.controlledTeam) {
-      this.addActionListeners(this.controlledTeam);
+    if (this.playerController) {
+      this.addActionListeners(this.playerController);
     }
   }
 
-  addActionListeners(controlledTeam: Team) {
+  addActionListeners(playerController: PlayerController) {
     this.actions.on('attack', () => {
-      this.battle.doTurn(controlledTeam, () => {
-        const targetTeam = this.battle.getOpponentTeam(controlledTeam);
-        const target = targetTeam.units.find((unit) => !unit.isDie);
-        const unit = controlledTeam.currentUnit;
-        unit.attack(target!);
-      });
+      const targetTeam = playerController.getOpponentTeam();
+      const target = targetTeam.units.find((unit) => !unit.isDie);
+      playerController.attack(target!);
     });
     this.actions.on('defence', () => {
-      this.battle.doTurn(controlledTeam, () => {
-        const unit = controlledTeam.currentUnit;
-        unit.defense();
-      });
+      playerController.defense();
     });
     this.actions.on('heal', () => {
-      this.battle.doTurn(controlledTeam, () => {
-        const unit = controlledTeam.currentUnit;
-        unit.heal(1);
-      });
+      playerController.heal();
     });
   }
 
@@ -96,10 +87,7 @@ export class BattleComponent extends PIXI.Container {
   }
 
   async checkTurn() {
-    if (
-      this.controlledTeam &&
-      this.battle.checkIsTurnAvailable(this.controlledTeam)
-    ) {
+    if (this.playerController?.checkIsTurnAvailable()) {
       await wait(TURN_DELAY);
       this.showActions(true);
     } else {

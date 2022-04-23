@@ -14,6 +14,7 @@ import {
 } from './services/spritesheet/unit-builder';
 import { BattleComponent } from './components/battle';
 import { AIController } from './services/ai-controller';
+import { PlayerController } from './services/player-controller';
 import { Unit } from './models/unit';
 import { Team } from './models/team';
 
@@ -63,10 +64,10 @@ function createComponents() {
   ]);
 
   const battle = new BattleService([team1, team2]);
-  // const ai1 = new AIController(battle, team1);
-  const ai2 = new AIController(battle, team2);
+  const playerController = new PlayerController(battle, team1);
+  const aiController = new AIController(battle, team2);
 
-  const battleComponent = new BattleComponent(battle, team1);
+  const battleComponent = new BattleComponent(battle, playerController);
 
   app.stage.addChild(battleComponent);
 
