@@ -2,7 +2,7 @@ import { BattleService } from './battle';
 import { wait } from '../utils/promise';
 import { Team } from '../models/team';
 
-const TURN_DELAY = 1000;
+const TURN_DELAY = 500;
 
 export class AIController {
   battle: BattleService;

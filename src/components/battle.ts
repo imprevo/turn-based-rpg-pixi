@@ -9,8 +9,6 @@ import { wait } from '../utils/promise';
 import { PlayerController } from '../services/player-controller';
 import { Team } from '../models/team';
 
-const TURN_DELAY = 1000;
-
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
   playerController?: PlayerController;
@@ -37,6 +35,10 @@ export class BattleComponent extends PIXI.Container {
 
     this.checkTurn();
     this.addListeners();
+  }
+
+  init() {
+    wait(1000).then(() => this.battle.init());
   }
 
   update() {
@@ -66,16 +68,21 @@ export class BattleComponent extends PIXI.Container {
       const aliveUnits = enemyUnits.filter(
         (component) => !component.unit.isDead
       );
-      this.onceUnitPick(aliveUnits, (target) =>
-        playerController.attack(target)
-      );
+      this.onceUnitPick(aliveUnits, (target) => {
+        playerController.attack(target);
+        this.showActions(false);
+      });
     });
     this.actions.on('defence', () => {
       this.offUnitPick();
       playerController.defense();
+      this.showActions(false);
     });
     this.actions.on('heal', () => {
-      this.onceUnitPick(playerUnits, (target) => playerController.heal(target));
+      this.onceUnitPick(playerUnits, (target) => {
+        playerController.heal(target);
+        this.showActions(false);
+      });
     });
   }
 
@@ -120,9 +127,8 @@ export class BattleComponent extends PIXI.Container {
     });
   }
 
-  async checkTurn() {
+  checkTurn() {
     if (this.playerController?.checkIsTurnAvailable()) {
-      await wait(TURN_DELAY);
       this.showActions(true);
     } else {
       this.showActions(false);

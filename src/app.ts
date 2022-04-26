@@ -6,9 +6,10 @@ import { BattleService } from './services/battle';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
+  UnitChargeSpritesheetBuilder,
   UnitDamagedSpritesheetBuilder,
   UnitDeathSpritesheetBuilder,
-  UnitIdleSpritesheetBuilder,
+  UnitMoveSpritesheetBuilder,
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
@@ -37,7 +38,8 @@ function loadTextures(): Promise<void> {
 function loadSpritesheets() {
   const parsers = [
     new PlanetSpritesheetBuilder(),
-    new UnitIdleSpritesheetBuilder(),
+    new UnitChargeSpritesheetBuilder(),
+    new UnitMoveSpritesheetBuilder(),
     new UnitDeathSpritesheetBuilder(),
     new UnitDamagedSpritesheetBuilder(),
     new UnitShootSpritesheetBuilder(),
@@ -68,6 +70,7 @@ function createComponents() {
   const aiController = new AIController(battle, team2);
 
   const battleComponent = new BattleComponent(battle, playerController);
+  battleComponent.init();
 
   app.stage.addChild(battleComponent);
 

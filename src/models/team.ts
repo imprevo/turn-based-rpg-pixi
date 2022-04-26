@@ -13,12 +13,17 @@ export class Team {
     this.currentUnit = units[0];
   }
 
-  prepareForTurn() {
+  beforeTurn() {
     // need to skip because in the first turn unit has already been setted
     if (this.shouldChangeUnit) {
       this.currentUnit = this.getNextUnit();
     }
+    this.currentUnit.setActive(true);
     this.shouldChangeUnit = true;
+  }
+
+  afterTurn() {
+    this.currentUnit.setActive(false);
   }
 
   isEveryoneDead() {

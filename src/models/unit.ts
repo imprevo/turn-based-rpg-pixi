@@ -14,12 +14,15 @@ export class Damage {
   constructor(public physicalDamage: number) {}
 }
 
-export class Unit extends PIXI.utils.EventEmitter<'changeStats' | 'attack'> {
+export class Unit extends PIXI.utils.EventEmitter<
+  'changeStats' | 'attack' | 'active'
+> {
   name: string;
   stats: Stats;
   damage: Damage;
   defenseValue = 1;
   isDefense = false;
+  isActive = false;
 
   constructor(name: string, hp: number, damage: number) {
     super();
@@ -30,6 +33,11 @@ export class Unit extends PIXI.utils.EventEmitter<'changeStats' | 'attack'> {
 
   get isDead() {
     return this.stats.hp <= 0;
+  }
+
+  setActive(active: boolean) {
+    this.isActive = active;
+    this.emit('active');
   }
 
   attack(target: Unit) {

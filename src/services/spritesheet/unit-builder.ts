@@ -1,4 +1,5 @@
-import idleImg from '../../assets/sci-fi/bot-wheel/charge.png';
+import moveImg from '../../assets/sci-fi/bot-wheel/move.png';
+import chargeImg from '../../assets/sci-fi/bot-wheel/charge.png';
 import deathImg from '../../assets/sci-fi/bot-wheel/death.png';
 import damagedImg from '../../assets/sci-fi/bot-wheel/damaged.png';
 import shootImg from '../../assets/sci-fi/bot-wheel/shoot.png';
@@ -6,24 +7,43 @@ import wakeImg from '../../assets/sci-fi/bot-wheel/wake.png';
 import { SpriteGrid } from '../../utils/sprite';
 import { SpritesheetBuilder } from './spritesheet-builder';
 
-export class UnitIdleSpritesheetBuilder extends SpritesheetBuilder {
+export class UnitMoveSpritesheetBuilder extends SpritesheetBuilder {
   grid = new SpriteGrid(117, 26);
 
   constructor() {
-    super(idleImg);
+    super(moveImg);
   }
 
   getConfig() {
     return {
       frames: {
-        unitIdle0: this.grid.getFrame(0, 0, 1, 1),
-        unitIdle1: this.grid.getFrame(0, 1, 1, 1),
-        unitIdle2: this.grid.getFrame(0, 2, 1, 1),
-        unitIdle3: this.grid.getFrame(0, 3, 1, 1),
+        unitMove0: this.grid.getFrame(0, 0, 1, 1),
+      },
+      meta: {
+        scale: '1',
+      },
+    };
+  }
+}
+
+export class UnitChargeSpritesheetBuilder extends SpritesheetBuilder {
+  grid = new SpriteGrid(117, 26);
+
+  constructor() {
+    super(chargeImg);
+  }
+
+  getConfig() {
+    return {
+      frames: {
+        unitCharge0: this.grid.getFrame(0, 0, 1, 1),
+        unitCharge1: this.grid.getFrame(0, 1, 1, 1),
+        unitCharge2: this.grid.getFrame(0, 2, 1, 1),
+        unitCharge3: this.grid.getFrame(0, 3, 1, 1),
       },
       // TODO: how to use it in components?
       animations: {
-        idle: ['unitIdle0', 'unitIdle1', 'unitIdle2', 'unitIdle3'],
+        Charge: ['unitCharge0', 'unitCharge1', 'unitCharge2', 'unitCharge3'],
       },
       meta: {
         scale: '1',

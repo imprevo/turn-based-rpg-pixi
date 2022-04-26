@@ -4,11 +4,20 @@ import { HealthBarComponent } from './healh-bar';
 
 class IdleAnimationSprite extends PIXI.AnimatedSprite {
   constructor() {
+    super([PIXI.Texture.from('unitMove0'), PIXI.Texture.from('unitWake4')]);
+    this.scale.set(3);
+    this.animationSpeed = 0.05;
+    this.loop = true;
+  }
+}
+
+class ChargeAnimatedSprite extends PIXI.AnimatedSprite {
+  constructor() {
     super([
-      PIXI.Texture.from('unitIdle0'),
-      PIXI.Texture.from('unitIdle1'),
-      PIXI.Texture.from('unitIdle2'),
-      PIXI.Texture.from('unitIdle3'),
+      PIXI.Texture.from('unitCharge0'),
+      PIXI.Texture.from('unitCharge1'),
+      PIXI.Texture.from('unitCharge2'),
+      PIXI.Texture.from('unitCharge3'),
     ]);
     this.scale.set(3);
     this.animationSpeed = 0.1;
@@ -80,6 +89,7 @@ class WakeAnimationSprite extends PIXI.AnimatedSprite {
 
 enum UnitAnimationState {
   IDLE,
+  CHARGE,
   DEATH,
   DAMAGED,
   SHOOT,
@@ -132,6 +142,8 @@ class UnitAnimation extends PIXI.Container {
         return new WakeAnimationSprite();
       case UnitAnimationState.IDLE:
         return new IdleAnimationSprite();
+      case UnitAnimationState.CHARGE:
+        return new ChargeAnimatedSprite();
       case UnitAnimationState.SHOOT:
         return new ShootAnimationSprite();
       case UnitAnimationState.DAMAGED:
@@ -149,6 +161,8 @@ class UnitAnimation extends PIXI.Container {
         return UnitAnimationState.IDLE;
       case UnitAnimationState.IDLE:
         return null;
+      case UnitAnimationState.CHARGE:
+        return UnitAnimationState.IDLE;
       case UnitAnimationState.SHOOT:
         return UnitAnimationState.IDLE;
       case UnitAnimationState.DAMAGED:
@@ -225,6 +239,7 @@ export class UnitComponent extends PIXI.Container {
   addListeners() {
     this.unit.on('changeStats', this.handleUnitChange);
     this.unit.on('attack', this.handleUnitAttack);
+    this.unit.on('active', this.handleActiveUnit);
     this.pickArea.on('click', this.handlePickUnit);
   }
 
@@ -244,6 +259,14 @@ export class UnitComponent extends PIXI.Container {
 
   handlePickUnit = () => {
     this.emit('pick', this.unit);
+  };
+
+  handleActiveUnit = () => {
+    if (this.unit.isActive) {
+      this.unitAnimation.runAnimation(UnitAnimationState.CHARGE);
+    } else {
+      this.unitAnimation.runAnimation(UnitAnimationState.IDLE);
+    }
   };
 
   updateHealthbar() {
