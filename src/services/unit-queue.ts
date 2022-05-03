@@ -14,10 +14,8 @@ export class UnitQueue {
 
   startTurn() {
     // need to skip because in the first turn unit has already been setted
-    if (!this.isFirstTurn) {
-      this.currentUnit = this.getNextUnit();
-      this.team.currentUnit = this.currentUnit;
-    }
+    this.currentUnit = this.getNextUnit();
+    this.team.currentUnit = this.currentUnit;
     this.isFirstTurn = false;
     this.currentUnit.setActive(true);
   }
@@ -26,16 +24,26 @@ export class UnitQueue {
     this.currentUnit.setActive(false);
   }
 
-  getNextUnit() {
-    const currentUnitIndex = this.team.units.findIndex(
+  getOrderedAliveUnits() {
+    const { units } = this.team;
+
+    const currentUnitIndex = units.findIndex(
       (unit) => unit === this.currentUnit
     );
 
-    const nextAliveUnits = this.team.units
-      .slice(currentUnitIndex + 1, this.team.units.length)
-      .concat(this.team.units.slice(0, currentUnitIndex + 1))
+    return units
+      .slice(currentUnitIndex, units.length)
+      .concat(units.slice(0, currentUnitIndex))
       .filter((unit) => !unit.isDead);
+  }
 
-    return nextAliveUnits[0];
+  getNextUnit() {
+    const aliveUnits = this.getOrderedAliveUnits();
+
+    if (this.isFirstTurn || aliveUnits.length <= 1) {
+      return aliveUnits[0];
+    }
+
+    return aliveUnits[1];
   }
 }
