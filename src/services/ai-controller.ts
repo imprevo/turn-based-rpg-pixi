@@ -17,7 +17,7 @@ export class AIController {
   }
 
   addListeners() {
-    this.battle.on('turnEnd', () => {
+    this.battle.on('turnStart', () => {
       this.checkTurn();
     });
   }

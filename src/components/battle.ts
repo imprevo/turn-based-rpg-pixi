@@ -46,7 +46,7 @@ export class BattleComponent extends PIXI.Container {
   }
 
   addListeners() {
-    this.battle.on('turnEnd', () => {
+    this.battle.on('turnStart', () => {
       this.checkTurn();
     });
     this.battle.on('gameover', async (winner: Unit) => {

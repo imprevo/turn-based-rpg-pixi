@@ -1,45 +1,31 @@
 import { Unit } from './unit';
+import { UnitQueue } from '../services/unit-queue';
 
 export class Team {
   name: string;
   units: Unit[];
-  currentUnit: Unit;
 
-  shouldChangeUnit = false;
+  queue: UnitQueue;
 
   constructor(name: string, units: Unit[]) {
     this.name = name;
     this.units = units;
-    this.currentUnit = units[0];
+    this.queue = new UnitQueue(units);
   }
 
-  beforeTurn() {
-    // need to skip because in the first turn unit has already been setted
-    if (this.shouldChangeUnit) {
-      this.currentUnit = this.getNextUnit();
-    }
-    this.currentUnit.setActive(true);
-    this.shouldChangeUnit = true;
+  get currentUnit() {
+    return this.queue.currentUnit;
   }
 
-  afterTurn() {
-    this.currentUnit.setActive(false);
+  startTurn() {
+    this.queue.startTurn();
+  }
+
+  endTurn() {
+    this.queue.endTurn();
   }
 
   isEveryoneDead() {
     return this.units.every((unit) => unit.isDead);
-  }
-
-  getNextUnit() {
-    const currentUnitIndex = this.units.findIndex(
-      (unit) => unit === this.currentUnit
-    );
-
-    const nextAliveUnits = this.units
-      .slice(currentUnitIndex + 1, this.units.length)
-      .concat(this.units.slice(0, currentUnitIndex + 1))
-      .filter((unit) => !unit.isDead);
-
-    return nextAliveUnits[0];
   }
 }

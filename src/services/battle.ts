@@ -1,46 +1,45 @@
 import * as PIXI from 'pixi.js';
 import { Team } from '../models/team';
-import { wait } from '../utils/promise';
-
-const TURN_DELAY = 1000;
+import { TurnSystem } from './turn-system';
 
 export class BattleService extends PIXI.utils.EventEmitter<
-  'turnEnd' | 'gameover'
+  'turnStart' | 'gameover'
 > {
   teams: [Team, Team];
   team1: Team;
   team2: Team;
-
-  currentTeam: Team | null;
+  turnSystem: TurnSystem;
 
   constructor(teams: [Team, Team]) {
     super();
     this.teams = teams;
+    this.turnSystem = new TurnSystem(teams);
     this.team1 = teams[0];
     this.team2 = teams[1];
-    this.currentTeam = null;
   }
 
   init() {
-    this.currentTeam = this.team1;
-    this.currentTeam.beforeTurn();
-    this.emit('turnEnd');
+    this.startTurn();
+  }
+
+  startTurn() {
+    this.turnSystem.startTurn();
+    this.emit('turnStart');
+  }
+
+  endTurn() {
+    this.turnSystem.endTurn();
   }
 
   async doTurn(team: Team, action: () => void) {
-    if (this.currentTeam !== team) {
-      throw new Error('Not your turn!');
-    }
-    this.currentTeam = null;
-    // TODO: wait for animation
-    action();
-    await wait(TURN_DELAY);
-    team.afterTurn();
+    await this.turnSystem.doTurn(team, action);
+
     const winner = this.checkWinner();
     if (winner !== null) {
       this.emit('gameover', winner);
     } else {
-      this.endTurn(team);
+      this.endTurn();
+      this.startTurn();
     }
   }
 
@@ -54,17 +53,11 @@ export class BattleService extends PIXI.utils.EventEmitter<
     return null;
   }
 
-  endTurn(team: Team) {
-    this.currentTeam = this.getOpponentTeam(team);
-    this.currentTeam.beforeTurn();
-    this.emit('turnEnd');
-  }
-
   getOpponentTeam(team: Team) {
-    return this.teams.find((t) => t !== team) as Team;
+    return this.turnSystem.getOpponentTeam(team);
   }
 
   checkIsTurnAvailable(team: Team) {
-    return this.currentTeam === team;
+    return this.turnSystem.checkIsTurnAvailable(team);
   }
 }
