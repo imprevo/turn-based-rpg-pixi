@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { Team } from '../models/team';
+import { Action } from './actions/_action';
 import { TurnSystem } from './turn-system';
 
 export class BattleService extends PIXI.utils.EventEmitter<
@@ -31,8 +32,8 @@ export class BattleService extends PIXI.utils.EventEmitter<
     this.turnSystem.endTurn();
   }
 
-  async doTurn(team: Team, action: () => void) {
-    await this.turnSystem.doTurn(team, action);
+  async doTurn(action: Action) {
+    await this.turnSystem.doTurn(action);
 
     const winner = this.checkWinner();
     if (winner !== null) {

@@ -1,5 +1,8 @@
 import { Team } from '../models/team';
 import { Unit } from '../models/unit';
+import { AttackAction } from './actions/attack-action';
+import { DefenseAction } from './actions/defense-action';
+import { HealAction } from './actions/heal-action';
 import { BattleService } from './battle';
 
 export class PlayerController {
@@ -11,26 +14,19 @@ export class PlayerController {
     this.battle = battle;
   }
 
-  get currentUnit() {
-    return this.team.currentUnit;
-  }
-
   attack(target: Unit) {
-    this.battle.doTurn(this.team, () => {
-      this.currentUnit.attack(target);
-    });
+    const action = new AttackAction(this.team, target);
+    this.battle.doTurn(action);
   }
 
   defense() {
-    this.battle.doTurn(this.team, () => {
-      this.currentUnit.defense();
-    });
+    const action = new DefenseAction(this.team);
+    this.battle.doTurn(action);
   }
 
   heal(target: Unit) {
-    this.battle.doTurn(this.team, () => {
-      target.heal();
-    });
+    const action = new HealAction(this.team, target);
+    this.battle.doTurn(action);
   }
 
   checkIsTurnAvailable() {

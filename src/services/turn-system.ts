@@ -1,8 +1,7 @@
 import { Team } from '../models/team';
 import { wait } from '../utils/promise';
+import { Action } from './actions/_action';
 import { UnitQueue } from './unit-queue';
-
-const TURN_DELAY = 1000;
 
 export class TurnSystem {
   teams: [Team, Team];
@@ -39,16 +38,17 @@ export class TurnSystem {
     this.currentTeamQueue.endTurn();
   }
 
-  async doTurn(team: Team, action: () => void) {
-    if (!this.checkIsTurnAvailable(team)) {
-      throw new Error(`"${team.name}", this is not your turn!`);
+  async doTurn(action: Action) {
+    if (!this.checkIsTurnAvailable(action.team)) {
+      throw new Error(`"${action.team.name}", this is not your turn!`);
     }
 
     this.isBlocked = true;
 
-    action();
-    // TODO: wait for animation
-    await wait(TURN_DELAY);
+    action.execute();
+    if (action.delay) {
+      await wait(action.delay);
+    }
 
     this.isBlocked = false;
   }
