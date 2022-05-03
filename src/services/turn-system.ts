@@ -1,5 +1,6 @@
 import { Team } from '../models/team';
 import { wait } from '../utils/promise';
+import { UnitQueue } from './unit-queue';
 
 const TURN_DELAY = 1000;
 
@@ -7,8 +8,10 @@ export class TurnSystem {
   teams: [Team, Team];
   team1: Team;
   team2: Team;
-
   currentTeam: Team;
+
+  teamsQueue: [UnitQueue, UnitQueue];
+  currentTeamQueue: UnitQueue;
 
   isFirstTurn = true;
   isBlocked = false;
@@ -18,18 +21,22 @@ export class TurnSystem {
     this.team1 = teams[0];
     this.team2 = teams[1];
     this.currentTeam = this.team1;
+
+    this.teamsQueue = [new UnitQueue(this.team1), new UnitQueue(this.team2)];
+    this.currentTeamQueue = this.teamsQueue[0];
   }
 
   startTurn() {
     if (!this.isFirstTurn) {
       this.currentTeam = this.getOpponentTeam(this.currentTeam);
+      this.currentTeamQueue = this.getUnitsQueueByTeam(this.currentTeam);
     }
     this.isFirstTurn = false;
-    this.currentTeam.startTurn();
+    this.currentTeamQueue.startTurn();
   }
 
   endTurn() {
-    this.currentTeam.endTurn();
+    this.currentTeamQueue.endTurn();
   }
 
   async doTurn(team: Team, action: () => void) {
@@ -44,6 +51,10 @@ export class TurnSystem {
     await wait(TURN_DELAY);
 
     this.isBlocked = false;
+  }
+
+  getUnitsQueueByTeam(team: Team) {
+    return this.teamsQueue.find((queue) => queue.team === team) as UnitQueue;
   }
 
   getOpponentTeam(team: Team) {
