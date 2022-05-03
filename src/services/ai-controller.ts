@@ -18,7 +18,7 @@ export class AIController {
   }
 
   addListeners() {
-    this.battle.on('turnStart', () => {
+    this.battle.on('readyForAction', () => {
       this.checkTurn();
     });
   }
@@ -26,7 +26,7 @@ export class AIController {
   async doTurn() {
     await wait(TURN_DELAY);
     const action = new AttackAction(this.aiTeam, this.findSomeTarget());
-    this.battle.doTurn(action);
+    this.battle.doAction(action);
   }
 
   checkTurn() {

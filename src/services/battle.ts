@@ -4,7 +4,7 @@ import { Action } from './actions/_action';
 import { TurnSystem } from './turn-system';
 
 export class BattleService extends PIXI.utils.EventEmitter<
-  'turnStart' | 'gameover'
+  'readyForAction' | 'gameover'
 > {
   teams: [Team, Team];
   team1: Team;
@@ -20,27 +20,22 @@ export class BattleService extends PIXI.utils.EventEmitter<
   }
 
   init() {
-    this.startTurn();
-  }
-
-  startTurn() {
     this.turnSystem.startTurn();
-    this.emit('turnStart');
+    this.emit('readyForAction');
   }
 
-  endTurn() {
-    this.turnSystem.endTurn();
-  }
-
-  async doTurn(action: Action) {
-    await this.turnSystem.doTurn(action);
+  async doAction(action: Action) {
+    await this.turnSystem.doAction(action);
 
     const winner = this.checkWinner();
     if (winner !== null) {
       this.emit('gameover', winner);
     } else {
-      this.endTurn();
-      this.startTurn();
+      if (!this.turnSystem.hasTurnPoints()) {
+        this.turnSystem.endTurn();
+        this.turnSystem.startTurn();
+      }
+      this.emit('readyForAction');
     }
   }
 

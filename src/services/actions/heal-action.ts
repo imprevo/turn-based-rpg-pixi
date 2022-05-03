@@ -7,7 +7,7 @@ export class HealAction extends Action {
   target: Unit;
 
   constructor(team: Team, target: Unit) {
-    super(team);
+    super(team, 1);
     this.unit = team.currentUnit;
     this.target = target;
   }

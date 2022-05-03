@@ -7,7 +7,7 @@ export class AttackAction extends Action {
   target: Unit;
 
   constructor(team: Team, target: Unit) {
-    super(team);
+    super(team, 2);
     this.unit = team.currentUnit;
     this.target = target;
   }

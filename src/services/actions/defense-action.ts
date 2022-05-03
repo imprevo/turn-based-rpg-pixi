@@ -6,7 +6,7 @@ export class DefenseAction extends Action {
   unit: Unit;
 
   constructor(team: Team) {
-    super(team);
+    super(team, 2);
     this.unit = team.currentUnit;
   }
 

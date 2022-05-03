@@ -165,6 +165,7 @@ class UnitAnimation extends PIXI.Container {
         return UnitAnimationState.IDLE;
       case UnitAnimationState.SHOOT:
         return UnitAnimationState.IDLE;
+      // TODO: should switch to prev state when attacking or healing self
       case UnitAnimationState.DAMAGED:
         return UnitAnimationState.IDLE;
       case UnitAnimationState.DEATH:

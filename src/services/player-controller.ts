@@ -16,17 +16,17 @@ export class PlayerController {
 
   attack(target: Unit) {
     const action = new AttackAction(this.team, target);
-    this.battle.doTurn(action);
+    this.battle.doAction(action);
   }
 
   defense() {
     const action = new DefenseAction(this.team);
-    this.battle.doTurn(action);
+    this.battle.doAction(action);
   }
 
   heal(target: Unit) {
     const action = new HealAction(this.team, target);
-    this.battle.doTurn(action);
+    this.battle.doAction(action);
   }
 
   checkIsTurnAvailable() {

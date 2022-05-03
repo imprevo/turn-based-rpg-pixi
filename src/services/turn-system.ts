@@ -3,6 +3,8 @@ import { wait } from '../utils/promise';
 import { Action } from './actions/_action';
 import { UnitQueue } from './unit-queue';
 
+const TURN_POINTS = 2;
+
 export class TurnSystem {
   teams: [Team, Team];
   team1: Team;
@@ -11,6 +13,8 @@ export class TurnSystem {
 
   teamsQueue: [UnitQueue, UnitQueue];
   currentTeamQueue: UnitQueue;
+
+  turnPoints: number;
 
   isFirstTurn = true;
   isBlocked = false;
@@ -23,6 +27,8 @@ export class TurnSystem {
 
     this.teamsQueue = [new UnitQueue(this.team1), new UnitQueue(this.team2)];
     this.currentTeamQueue = this.teamsQueue[0];
+
+    this.turnPoints = 0;
   }
 
   startTurn() {
@@ -32,18 +38,20 @@ export class TurnSystem {
     }
     this.isFirstTurn = false;
     this.currentTeamQueue.startTurn();
+    this.turnPoints = TURN_POINTS;
   }
 
   endTurn() {
     this.currentTeamQueue.endTurn();
   }
 
-  async doTurn(action: Action) {
+  async doAction(action: Action) {
     if (!this.checkIsTurnAvailable(action.team)) {
       throw new Error(`"${action.team.name}", this is not your turn!`);
     }
 
     this.isBlocked = true;
+    this.turnPoints -= action.points;
 
     action.execute();
     if (action.delay) {
@@ -51,6 +59,10 @@ export class TurnSystem {
     }
 
     this.isBlocked = false;
+  }
+
+  hasTurnPoints() {
+    return this.turnPoints > 0;
   }
 
   getUnitsQueueByTeam(team: Team) {
