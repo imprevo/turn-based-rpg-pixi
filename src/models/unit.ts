@@ -15,7 +15,7 @@ export class Damage {
 }
 
 export class Unit extends PIXI.utils.EventEmitter<
-  'changeStats' | 'attack' | 'active'
+  'damage' | 'heal' | 'attack' | 'active'
 > {
   name: string;
   stats: Stats;
@@ -56,7 +56,7 @@ export class Unit extends PIXI.utils.EventEmitter<
     this.stats.hp -= this.calculateDamage(damage);
     this.stats.hp = Math.max(0, this.stats.hp);
     this.isDefense = false;
-    this.emit('changeStats');
+    this.emit('damage');
   }
 
   heal() {
@@ -64,7 +64,7 @@ export class Unit extends PIXI.utils.EventEmitter<
     this.isDefense = false;
     this.stats.hp += heal;
     this.stats.hp = Math.min(this.stats.hpMax, this.stats.hp);
-    this.emit('changeStats');
+    this.emit('heal');
   }
 
   defense() {

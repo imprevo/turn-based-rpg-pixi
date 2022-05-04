@@ -1,3 +1,4 @@
+import { Tween } from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
 import { Unit } from '../models/unit';
 import { HealthBarComponent } from './healh-bar';
@@ -174,6 +175,17 @@ class UnitAnimation extends PIXI.Container {
         throw new Error(`Unknown animation state: ${animationState}`);
     }
   }
+
+  setBlink(color: number) {
+    if (this.currentAnimation) {
+      new Tween(this.currentAnimation)
+        .to({ tint: color }, 150)
+        .repeat(3)
+        .yoyo(true)
+        .easing((k) => Math.floor(k))
+        .start();
+    }
+  }
 }
 
 class PickArea extends PIXI.Graphics {
@@ -199,12 +211,15 @@ export class UnitComponent extends PIXI.Container {
   unitName: PIXI.Text;
   unit: Unit;
 
+  unitWasDead: boolean;
+
   constructor(x: number, y: number, flip = false, unit: Unit) {
     super();
 
     this.unit = unit;
     this.x = x;
     this.y = y;
+    this.unitWasDead = unit.isDead;
 
     this.healthBar = this.initHealthbar(unit);
     this.unitName = this.initName(unit);
@@ -238,20 +253,31 @@ export class UnitComponent extends PIXI.Container {
   }
 
   addListeners() {
-    this.unit.on('changeStats', this.handleUnitChange);
+    this.unit.on('damage', this.handleUnitDamage);
+    this.unit.on('heal', this.handleUnitHeal);
     this.unit.on('attack', this.handleUnitAttack);
     this.unit.on('active', this.handleActiveUnit);
     this.pickArea.on('click', this.handlePickUnit);
   }
 
-  handleUnitChange = () => {
+  handleUnitDamage = () => {
     this.updateHealthbar();
     if (this.unit.isDead) {
       this.unitAnimation.runAnimation(UnitAnimationState.DEATH);
     } else {
       // TODO: runs on any stats changes. Not only health!
-      this.unitAnimation.runAnimation(UnitAnimationState.DAMAGED);
+      this.unitAnimation.setBlink(0xff0000);
     }
+    this.unitWasDead = this.unit.isDead;
+  };
+
+  handleUnitHeal = () => {
+    this.updateHealthbar();
+    if (this.unitWasDead) {
+      this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
+    }
+    this.unitAnimation.setBlink(0x00ff00);
+    this.unitWasDead = this.unit.isDead;
   };
 
   handleUnitAttack = () => {

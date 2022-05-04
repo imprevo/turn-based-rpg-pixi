@@ -1,5 +1,5 @@
+import { Tween } from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
-import * as TWEEN from '@tweenjs/tween.js';
 import { Button } from './button';
 
 const titleStyle = new PIXI.TextStyle({
@@ -82,14 +82,14 @@ export class GameOverComponent extends PIXI.Container {
 
   show(message: string) {
     this.title.y = -100;
-    new TWEEN.Tween(this.title).to({ y: 200 }, 1000).start();
+    new Tween(this.title).to({ y: 200 }, 1000).start();
 
     this.message.y = 700;
     this.message.text = message;
-    new TWEEN.Tween(this.message).to({ y: 300 }, 1000).start();
+    new Tween(this.message).to({ y: 300 }, 1000).start();
 
     this.restartBtn.y = 800;
-    new TWEEN.Tween(this.restartBtn).to({ y: 400 }, 1000).start();
+    new Tween(this.restartBtn).to({ y: 400 }, 1000).start();
 
     this.visible = true;
   }
