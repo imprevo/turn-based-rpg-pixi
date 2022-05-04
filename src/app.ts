@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as TWEEN from '@tweenjs/tween.js';
 import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
@@ -76,6 +77,7 @@ function createComponents() {
 
   app.ticker.add(() => {
     battleComponent.update();
+    TWEEN.update();
   });
 }
 

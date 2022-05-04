@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as TWEEN from '@tweenjs/tween.js';
 
 const titleStyle = new PIXI.TextStyle({
   fontSize: 90,
@@ -34,22 +35,28 @@ export class GameOverComponent extends PIXI.Container {
     this.shadow.endFill();
 
     this.title.x = 400;
-    this.title.y = 200;
+    this.title.y = -100;
     this.title.anchor.set(0.5);
 
     this.message.x = 400;
-    this.message.y = 300;
+    this.message.y = 700;
     this.message.anchor.set(0.5);
 
     this.addChild(this.shadow, this.title, this.message);
   }
 
   show(message: string) {
+    this.title.y = -100;
+    new TWEEN.Tween(this.title).to({ y: 200 }, 1000).start();
+
+    this.message.y = 700;
     this.message.text = message;
+    new TWEEN.Tween(this.message).to({ y: 300 }, 1000).start();
+
     this.visible = true;
   }
 
-  showMessage(teamName: string) {
+  showWinMessage(teamName: string) {
     this.show(`${teamName} team wins!`);
   }
 }

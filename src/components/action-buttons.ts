@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import * as TWEEN from '@tweenjs/tween.js';
 
 class BaseButton extends PIXI.Sprite {
   isDown = false;
@@ -97,21 +98,26 @@ export class ActionButtonsComponent extends PIXI.Container {
     super();
 
     this.x = 400;
-    this.y = 550;
-    this.visible = false;
+    this.y = 650;
 
     this.attackButton.x = -64;
     this.healButton.x = 64;
 
     this.addChild(this.attackButton, this.defenceButton, this.healButton);
-
-    this.addListeners();
   }
 
   addListeners() {
+    this.removeListeners();
+
     this.attackButton.on('click', this.doAttack);
     this.defenceButton.on('click', this.doDefence);
     this.healButton.on('click', this.doHeal);
+  }
+
+  removeListeners() {
+    this.attackButton.off('click', this.doAttack);
+    this.defenceButton.off('click', this.doDefence);
+    this.healButton.off('click', this.doHeal);
   }
 
   doAttack = () => {
@@ -125,4 +131,15 @@ export class ActionButtonsComponent extends PIXI.Container {
   doHeal = () => {
     this.emit('heal');
   };
+
+  show(show: boolean) {
+    const y = show ? 550 : 650;
+    new TWEEN.Tween(this).to({ y }, 300).start();
+
+    if (show) {
+      this.addListeners();
+    } else {
+      this.removeListeners();
+    }
+  }
 }

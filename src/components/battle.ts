@@ -52,7 +52,7 @@ export class BattleComponent extends PIXI.Container {
     this.battle.on('gameover', async (winner: Unit) => {
       this.showActions(false);
       await wait(500);
-      this.gameOverMessage.showMessage(winner.name);
+      this.gameOverMessage.showWinMessage(winner.name);
     });
 
     if (this.playerController) {
@@ -142,6 +142,6 @@ export class BattleComponent extends PIXI.Container {
   }
 
   showActions(visible: boolean) {
-    this.actions.visible = visible;
+    this.actions.show(visible);
   }
 }
