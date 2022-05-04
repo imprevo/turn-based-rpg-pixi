@@ -41,6 +41,11 @@ export class BattleComponent extends PIXI.Container {
     wait(1000).then(() => this.battle.init());
   }
 
+  restart() {
+    // TODO: reset data instead
+    window.location.reload();
+  }
+
   update() {
     this.environment.update();
   }
@@ -53,6 +58,10 @@ export class BattleComponent extends PIXI.Container {
       this.showActions(false);
       await wait(500);
       this.gameOverMessage.showWinMessage(winner.name);
+    });
+
+    this.gameOverMessage.on('restart', () => {
+      this.restart();
     });
 
     if (this.playerController) {
