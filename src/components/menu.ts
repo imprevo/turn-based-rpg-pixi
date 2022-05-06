@@ -1,5 +1,7 @@
 import * as PIXI from 'pixi.js';
+import { BattleConfig, TeamConfig } from '../models/battle-config';
 import { Button } from './button';
+import { Counter } from './counter';
 
 const titleStyle = new PIXI.TextStyle({
   fontSize: 50,
@@ -58,6 +60,7 @@ class PanelTitle extends PIXI.Text {
 class Panel extends PIXI.Container {
   bg = new PanelBackground();
   title = new PanelTitle('Team name');
+  counter = new Counter(2, 1, 6);
 
   constructor(teamName: string) {
     super();
@@ -68,7 +71,14 @@ class Panel extends PIXI.Container {
     this.title.x = 116;
     this.title.y = 50;
 
-    this.addChild(this.bg, this.title);
+    this.counter.x = 116;
+    this.counter.y = 140;
+
+    this.addChild(this.bg, this.title, this.counter);
+  }
+
+  getData() {
+    return new TeamConfig(this.title.text, this.counter.count);
   }
 }
 
@@ -103,6 +113,10 @@ export class Menu extends PIXI.Container {
   }
 
   handlePlay = () => {
-    this.emit('play');
+    const data = new BattleConfig(
+      this.panelLeft.getData(),
+      this.panelRight.getData()
+    );
+    this.emit('play', data);
   };
 }

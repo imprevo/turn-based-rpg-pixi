@@ -3,6 +3,8 @@ import * as PIXI from 'pixi.js';
 import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
+import iconArrowLeftImg from './assets/pro-ui-light-minimalism/09_IconArrowLeft.png';
+import iconArrowRightImg from './assets/pro-ui-light-minimalism/09_IconArrowRight.png';
 import buttonImg from './assets/pro-ui-light-minimalism/Button.png';
 import panel2Img from './assets/pro-ui-light-minimalism/Panel2.png';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
@@ -29,6 +31,8 @@ function loadTextures(): Promise<void> {
   app.loader.add('iconPlus', iconPlusImg);
   app.loader.add('iconAttack', iconAttackImg);
   app.loader.add('iconShield', iconShieldImg);
+  app.loader.add('iconArrowLeft', iconArrowLeftImg);
+  app.loader.add('iconArrowRight', iconArrowRightImg);
   app.loader.add('button', buttonImg);
   app.loader.add('panel2', panel2Img);
 

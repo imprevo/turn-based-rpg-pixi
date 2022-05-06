@@ -1,10 +1,10 @@
 import * as PIXI from 'pixi.js';
-import { Team } from '../models/team';
-import { Unit } from '../models/unit';
+import { BattleConfig } from '../models/battle-config';
 import { AIController } from '../services/ai-controller';
 import { BattleService } from '../services/battle';
 import { PlayerController } from '../services/player-controller';
 import { BattleComponent } from './battle';
+import { BattleCreator } from '../services/battle-creator';
 import { Menu } from './menu';
 
 interface Scene extends PIXI.Container {
@@ -13,6 +13,7 @@ interface Scene extends PIXI.Container {
 
 export class Root extends PIXI.Container {
   scene: Scene;
+  battleCreator = new BattleCreator();
 
   constructor() {
     super();
@@ -28,8 +29,7 @@ export class Root extends PIXI.Container {
     return menu;
   }
 
-  createBattleScene() {
-    const battle = this.prepareBattle();
+  createBattleScene(battle: BattleService) {
     const playerController = new PlayerController(battle, battle.team1);
     const aiController = new AIController(battle, battle.team2);
 
@@ -40,29 +40,11 @@ export class Root extends PIXI.Container {
     return battleScene;
   }
 
-  prepareBattle() {
-    const team1 = new Team('Left', [
-      new Unit('Left 1', 5, 2),
-      new Unit('Left 2', 5, 2),
-      new Unit('Left 3', 5, 2),
-      new Unit('Left 4', 5, 2),
-    ]);
-    const team2 = new Team('Right', [
-      new Unit('Right 1', 5, 2),
-      new Unit('Right 2', 5, 2),
-      new Unit('Right 3', 5, 2),
-      new Unit('Right 4', 5, 2),
-    ]);
+  handlePlay = (data: BattleConfig) => {
+    const battle = this.battleCreator.createBattle(data);
+    const battleScene = this.createBattleScene(battle);
 
-    const battle = new BattleService([team1, team2]);
-
-    return battle;
-  }
-
-  handlePlay = () => {
-    const battle = this.createBattleScene();
-
-    this.setScene(battle);
+    this.setScene(battleScene);
   };
 
   handleExit = () => {
