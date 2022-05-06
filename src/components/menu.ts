@@ -70,9 +70,12 @@ class Panel extends PIXI.Container {
   bg = new PanelBackground();
   title = new TextInput(inputConfig);
   counter = new Counter(2, 1, 6);
+  controlled: boolean; // TODO: add checkbox
 
-  constructor(teamName: string) {
+  constructor(teamName: string, controlled: boolean) {
     super();
+
+    this.controlled = controlled;
 
     this.pivot.set(116, 130);
 
@@ -87,15 +90,15 @@ class Panel extends PIXI.Container {
   }
 
   getData() {
-    return new TeamConfig(this.title.text, this.counter.count);
+    return new TeamConfig(this.title.text, this.counter.count, this.controlled);
   }
 }
 
 export class Menu extends PIXI.Container {
   title = new Title();
   playBtn = new PlayButton();
-  panelLeft = new Panel('Left');
-  panelRight = new Panel('Right');
+  panelLeft = new Panel('Left', true);
+  panelRight = new Panel('Right', false);
 
   constructor() {
     super();

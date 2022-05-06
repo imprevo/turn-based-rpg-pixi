@@ -29,20 +29,27 @@ export class Root extends PIXI.Container {
     return menu;
   }
 
-  createBattleScene(battle: BattleService) {
-    const playerController = new PlayerController(battle, battle.team1);
-    const aiController = new AIController(battle, battle.team2);
-
-    const battleScene = new BattleComponent(battle, playerController);
+  createBattleScene(
+    battle: BattleService,
+    ctrls: (PlayerController | AIController)[]
+  ) {
+    const battleScene = new BattleComponent(battle);
     battleScene.init();
     battleScene.on('exit', this.handleExit);
+
+    ctrls.forEach((ctrl) => {
+      if (ctrl instanceof PlayerController) {
+        battleScene.setController(ctrl);
+      }
+    });
 
     return battleScene;
   }
 
   handlePlay = (data: BattleConfig) => {
     const battle = this.battleCreator.createBattle(data);
-    const battleScene = this.createBattleScene(battle);
+    const ctrls = this.battleCreator.createControllers(battle, data);
+    const battleScene = this.createBattleScene(battle, ctrls);
 
     this.setScene(battleScene);
   };

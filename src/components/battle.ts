@@ -11,7 +11,6 @@ import { Team } from '../models/team';
 
 export class BattleComponent extends PIXI.Container {
   battle: BattleService;
-  playerController?: PlayerController;
 
   environment = new EnvironmentComponent();
   gameOverMessage = new GameOverComponent();
@@ -19,11 +18,10 @@ export class BattleComponent extends PIXI.Container {
   units: UnitComponent[];
   unitPickSubscriptions: (() => void)[] = [];
 
-  constructor(battle: BattleService, playerController?: PlayerController) {
+  constructor(battle: BattleService) {
     super();
 
     this.battle = battle;
-    this.playerController = playerController;
     this.units = this.createUnitComponents();
 
     this.addChild(
@@ -33,7 +31,6 @@ export class BattleComponent extends PIXI.Container {
       this.actions
     );
 
-    this.checkTurn();
     this.addListeners();
   }
 
@@ -50,9 +47,6 @@ export class BattleComponent extends PIXI.Container {
   }
 
   addListeners() {
-    this.battle.on('readyForAction', () => {
-      this.checkTurn();
-    });
     this.battle.on('gameover', async (winner: Unit) => {
       this.showActions(false);
       await wait(500);
@@ -62,16 +56,15 @@ export class BattleComponent extends PIXI.Container {
     this.gameOverMessage.on('restart', () => {
       this.restart();
     });
-
-    if (this.playerController) {
-      this.addActionListeners(this.playerController);
-    }
   }
 
   addActionListeners(playerController: PlayerController) {
     const playerUnits = this.getUnitsByTeam(playerController.team);
     const enemyUnits = this.getUnitsByTeam(playerController.getOpponentTeam());
 
+    this.battle.on('readyForAction', () => {
+      this.checkTurn(playerController);
+    });
     this.actions.on('attack', () => {
       const aliveUnits = enemyUnits.filter(
         (component) => !component.unit.isDead
@@ -92,6 +85,11 @@ export class BattleComponent extends PIXI.Container {
         this.showActions(false);
       });
     });
+  }
+
+  setController(playerController: PlayerController) {
+    // TODO: create additional component
+    this.addActionListeners(playerController);
   }
 
   createUnitComponents() {
@@ -135,8 +133,8 @@ export class BattleComponent extends PIXI.Container {
     });
   }
 
-  checkTurn() {
-    if (this.playerController?.checkIsTurnAvailable()) {
+  checkTurn(playerController: PlayerController) {
+    if (playerController.checkIsTurnAvailable()) {
       this.showActions(true);
     } else {
       this.showActions(false);

@@ -1,5 +1,9 @@
 export class TeamConfig {
-  constructor(public name: string, public unitCount: number) {}
+  constructor(
+    public name: string,
+    public unitCount: number,
+    public controlled: boolean
+  ) {}
 }
 
 export class BattleConfig {

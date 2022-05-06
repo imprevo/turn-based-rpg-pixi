@@ -1,7 +1,9 @@
 import { BattleConfig, TeamConfig } from '../models/battle-config';
 import { Team } from '../models/team';
 import { Unit } from '../models/unit';
+import { AIController } from './ai-controller';
 import { BattleService } from './battle';
+import { PlayerController } from './player-controller';
 
 export class BattleCreator {
   createBattle(data: BattleConfig) {
@@ -11,6 +13,20 @@ export class BattleCreator {
     const battle = new BattleService([team1, team2]);
 
     return battle;
+  }
+
+  createControllers(battle: BattleService, data: BattleConfig) {
+    return [
+      this.createController(battle, battle.team1, data.team1),
+      this.createController(battle, battle.team2, data.team2),
+    ];
+  }
+
+  createController(battle: BattleService, team: Team, data: TeamConfig) {
+    if (data.controlled) {
+      return new PlayerController(battle, team);
+    }
+    return new AIController(battle, team);
   }
 
   createTeam(data: TeamConfig) {
