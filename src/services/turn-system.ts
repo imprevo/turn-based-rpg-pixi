@@ -17,7 +17,7 @@ export class TurnSystem {
   turnPoints: number;
 
   isFirstTurn = true;
-  isBlocked = false;
+  isBlocked = true;
 
   constructor(teams: [Team, Team]) {
     this.teams = teams;
@@ -39,6 +39,7 @@ export class TurnSystem {
     this.isFirstTurn = false;
     this.currentTeamQueue.startTurn();
     this.turnPoints = TURN_POINTS;
+    this.isBlocked = false;
   }
 
   endTurn() {
