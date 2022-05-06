@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import TextInput, { InputConfig } from 'pixi-text-input';
 import { BattleConfig, TeamConfig } from '../models/battle-config';
 import { Button } from './button';
 import { Counter } from './counter';
@@ -11,11 +12,6 @@ const titleStyle = new PIXI.TextStyle({
   dropShadowBlur: 4,
   dropShadowAngle: Math.PI / 6,
   dropShadowDistance: 6,
-});
-
-const panelTitleStyle = new PIXI.TextStyle({
-  fontSize: 30,
-  fill: 0x000000,
 });
 
 const buttonStyle = new PIXI.TextStyle({
@@ -50,16 +46,29 @@ class PanelBackground extends PIXI.Sprite {
   }
 }
 
-class PanelTitle extends PIXI.Text {
-  constructor(text: string) {
-    super(text, panelTitleStyle);
-    this.anchor.set(0.5);
-  }
-}
+const inputConfig: InputConfig = {
+  input: {
+    fontSize: '20px',
+    padding: '4px',
+    width: '160px',
+    color: '#000',
+    textAlign: 'center',
+  },
+  box: {
+    default: {
+      rounded: 12,
+      stroke: { color: 0xcbcee0, width: 3 },
+    },
+    focused: {
+      rounded: 12,
+      stroke: { color: 0xabafc6, width: 3 },
+    },
+  },
+};
 
 class Panel extends PIXI.Container {
   bg = new PanelBackground();
-  title = new PanelTitle('Team name');
+  title = new TextInput(inputConfig);
   counter = new Counter(2, 1, 6);
 
   constructor(teamName: string) {
@@ -68,7 +77,7 @@ class Panel extends PIXI.Container {
     this.pivot.set(116, 130);
 
     this.title.text = teamName;
-    this.title.x = 116;
+    this.title.x = 30;
     this.title.y = 50;
 
     this.counter.x = 116;
