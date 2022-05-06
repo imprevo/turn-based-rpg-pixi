@@ -42,8 +42,7 @@ export class BattleComponent extends PIXI.Container {
   }
 
   restart() {
-    // TODO: reset data instead
-    window.location.reload();
+    this.emit('exit');
   }
 
   update() {

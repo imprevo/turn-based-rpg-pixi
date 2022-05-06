@@ -4,7 +4,7 @@ import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
 import buttonImg from './assets/pro-ui-light-minimalism/Button.png';
-import { BattleService } from './services/battle';
+import panel2Img from './assets/pro-ui-light-minimalism/Panel2.png';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
@@ -15,11 +15,7 @@ import {
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
-import { BattleComponent } from './components/battle';
-import { AIController } from './services/ai-controller';
-import { PlayerController } from './services/player-controller';
-import { Unit } from './models/unit';
-import { Team } from './models/team';
+import { Root } from './components/root';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -34,6 +30,7 @@ function loadTextures(): Promise<void> {
   app.loader.add('iconAttack', iconAttackImg);
   app.loader.add('iconShield', iconShieldImg);
   app.loader.add('button', buttonImg);
+  app.loader.add('panel2', panel2Img);
 
   return new Promise((resolve) => app.loader.load(() => resolve()));
 }
@@ -55,30 +52,12 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const team1 = new Team('Left', [
-    new Unit('Left 1', 5, 2),
-    new Unit('Left 2', 5, 2),
-    new Unit('Left 3', 5, 2),
-    new Unit('Left 4', 5, 2),
-  ]);
-  const team2 = new Team('Right', [
-    new Unit('Right 1', 5, 2),
-    new Unit('Right 2', 5, 2),
-    new Unit('Right 3', 5, 2),
-    new Unit('Right 4', 5, 2),
-  ]);
+  const root = new Root();
 
-  const battle = new BattleService([team1, team2]);
-  const playerController = new PlayerController(battle, team1);
-  const aiController = new AIController(battle, team2);
-
-  const battleComponent = new BattleComponent(battle, playerController);
-  battleComponent.init();
-
-  app.stage.addChild(battleComponent);
+  app.stage.addChild(root);
 
   app.ticker.add(() => {
-    battleComponent.update();
+    root.update();
     TWEEN.update();
   });
 }
