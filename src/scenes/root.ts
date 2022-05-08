@@ -3,15 +3,12 @@ import { BattleConfig } from '../models/battle-config';
 import { AIController } from '../services/ai-controller';
 import { BattleService } from '../services/battle';
 import { PlayerController } from '../services/player-controller';
-import { BattleComponent } from './battle';
+import { BattleScene } from './battle';
 import { BattleCreator } from '../services/battle-creator';
-import { Menu } from './menu';
+import { MenuScene } from './menu';
+import { Scene } from './_scene';
 
-interface Scene extends PIXI.Container {
-  update?: () => void;
-}
-
-export class Root extends PIXI.Container {
+export class RootScene extends Scene {
   scene: Scene;
   battleCreator = new BattleCreator();
 
@@ -22,7 +19,7 @@ export class Root extends PIXI.Container {
   }
 
   createMenuScene() {
-    const menu = new Menu();
+    const menu = new MenuScene();
 
     menu.on('play', this.handlePlay);
 
@@ -33,7 +30,7 @@ export class Root extends PIXI.Container {
     battle: BattleService,
     ctrls: (PlayerController | AIController)[]
   ) {
-    const battleScene = new BattleComponent(battle);
+    const battleScene = new BattleScene(battle);
     battleScene.init();
     battleScene.on('exit', this.handleExit);
 
@@ -60,7 +57,7 @@ export class Root extends PIXI.Container {
     this.setScene(menu);
   };
 
-  setScene(scene: PIXI.Container) {
+  setScene(scene: Scene) {
     this.removeChild(this.scene);
     this.scene = scene;
     this.addChild(scene);

@@ -1,15 +1,16 @@
 import * as PIXI from 'pixi.js';
-import { ActionButtonsComponent } from './action-buttons';
-import { GameOverComponent } from './game-over';
-import { EnvironmentComponent } from './environment';
-import { UnitComponent } from './unit';
+import { ActionButtonsComponent } from '../components/action-buttons';
+import { GameOverComponent } from '../components/game-over';
+import { EnvironmentComponent } from '../components/environment';
+import { UnitComponent } from '../components/unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
 import { PlayerController } from '../services/player-controller';
 import { Team } from '../models/team';
+import { Scene } from './_scene';
 
-export class BattleComponent extends PIXI.Container {
+export class BattleScene extends Scene {
   battle: BattleService;
 
   environment = new EnvironmentComponent();

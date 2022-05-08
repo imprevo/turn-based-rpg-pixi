@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
 import TextInput, { InputConfig } from 'pixi-text-input';
 import { BattleConfig, TeamConfig } from '../models/battle-config';
-import { Button } from './button';
-import { Counter } from './counter';
+import { Button } from '../components/button';
+import { Counter } from '../components/counter';
+import { Scene } from './_scene';
 
 const titleStyle = new PIXI.TextStyle({
   fontSize: 50,
@@ -94,7 +95,7 @@ class Panel extends PIXI.Container {
   }
 }
 
-export class Menu extends PIXI.Container {
+export class MenuScene extends Scene {
   title = new Title();
   playBtn = new PlayButton();
   panelLeft = new Panel('Left', true);

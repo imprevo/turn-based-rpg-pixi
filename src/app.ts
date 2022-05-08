@@ -17,7 +17,7 @@ import {
   UnitShootSpritesheetBuilder,
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
-import { Root } from './components/root';
+import { RootScene } from './scenes/root';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
@@ -56,7 +56,7 @@ function loadSpritesheets() {
 }
 
 function createComponents() {
-  const root = new Root();
+  const root = new RootScene();
 
   app.stage.addChild(root);
 
