@@ -65,7 +65,7 @@ export class MenuScene extends Scene {
     this.cpuVsCpuBtn.x = 630;
     this.cpuVsCpuBtn.y = 400;
 
-    this.settings.x = 480;
+    this.settings.x = 500;
     this.settings.y = 100;
 
     this.addChild(

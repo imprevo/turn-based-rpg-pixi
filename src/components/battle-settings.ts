@@ -1,3 +1,4 @@
+import { Easing, Tween } from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
 import TextInput, { InputConfig } from 'pixi-text-input';
 import { BattleConfig, TeamConfig } from '../models/battle-config';
@@ -35,7 +36,7 @@ const inputConfig: InputConfig = {
   input: {
     fontSize: '20px',
     padding: '4px',
-    width: '200px',
+    width: '180px',
     color: '#000',
     textAlign: 'center',
   },
@@ -62,14 +63,14 @@ class TeamSettings extends PIXI.Container {
     this.pivot.set(116, 130);
 
     this.title.text = title;
-    this.title.x = 134;
+    this.title.x = 124;
     this.title.anchor.set(0.5, 0);
 
     this.teamName.text = teamName;
     this.teamName.x = 30;
     this.teamName.y = 40;
 
-    this.counter.x = 134;
+    this.counter.x = 124;
     this.counter.y = 110;
 
     this.addChild(this.title, this.teamName, this.counter);
@@ -90,7 +91,7 @@ export class BattleSettings extends PIXI.Container {
   constructor() {
     super();
 
-    this.visible = false;
+    this.show(false, true);
 
     this.bg.scale.x = -1;
     this.bg.anchor.set(1, 0);
@@ -101,7 +102,7 @@ export class BattleSettings extends PIXI.Container {
     this.team2.x = 150;
     this.team2.y = 340;
 
-    this.playBtn.x = 170;
+    this.playBtn.x = 160;
     this.playBtn.y = 400;
 
     this.closeBtn.x = 10;
@@ -125,7 +126,13 @@ export class BattleSettings extends PIXI.Container {
     this.show(false);
   };
 
-  show(show: boolean) {
-    this.visible = show;
+  show(show: boolean, skipAnimation = false) {
+    const x = show ? 0 : -330;
+    if (skipAnimation) {
+      this.pivot.x = x;
+    } else {
+      const easing = show ? Easing.Back.Out : Easing.Back.In;
+      new Tween(this.pivot).to({ x }, 600).easing(easing).start();
+    }
   }
 }
