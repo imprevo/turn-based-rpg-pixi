@@ -21,11 +21,12 @@ import {
   UnitWakeSpritesheetBuilder,
 } from './services/spritesheet/unit-builder';
 import { RootScene } from './scenes/root';
+import { PRIMARY_BG_COLOR } from './constants/config';
 
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
 
 export const app = new PIXI.Application({
-  backgroundColor: 0x1099bb,
+  backgroundColor: PRIMARY_BG_COLOR,
   width: 800,
   height: 600,
 });

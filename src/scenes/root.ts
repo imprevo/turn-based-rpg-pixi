@@ -10,15 +10,16 @@ import { Scene } from './_scene';
 import { TransitionScene } from './transition';
 
 export class RootScene extends Scene {
-  scene: Scene;
+  scene?: Scene;
   loading: TransitionScene;
   battleCreator = new BattleCreator();
 
   constructor() {
     super();
-    this.scene = this.createMenuScene();
+
     this.loading = this.createLoadingScene();
-    this.addChild(this.scene, this.loading);
+    this.addChild(this.loading);
+    this.showMenuScene();
   }
 
   createLoadingScene() {
@@ -28,7 +29,7 @@ export class RootScene extends Scene {
   createMenuScene() {
     const menu = new MenuScene();
 
-    menu.on('play', this.handlePlay);
+    menu.on('play', this.showBattleScene);
 
     return menu;
   }
@@ -38,8 +39,7 @@ export class RootScene extends Scene {
     ctrls: (PlayerController | AIController)[]
   ) {
     const battleScene = new BattleScene(battle);
-    battleScene.init();
-    battleScene.on('exit', this.handleExit);
+    battleScene.on('exit', this.showMenuScene);
 
     ctrls.forEach((ctrl) => {
       if (ctrl instanceof PlayerController) {
@@ -50,7 +50,7 @@ export class RootScene extends Scene {
     return battleScene;
   }
 
-  handlePlay = (data: BattleConfig) => {
+  showBattleScene = (data: BattleConfig) => {
     const battle = this.battleCreator.createBattle(data);
     const ctrls = this.battleCreator.createControllers(battle, data);
     const battleScene = this.createBattleScene(battle, ctrls);
@@ -58,7 +58,7 @@ export class RootScene extends Scene {
     this.setScene(battleScene);
   };
 
-  handleExit = () => {
+  showMenuScene = () => {
     const menu = this.createMenuScene();
 
     this.setScene(menu);
@@ -67,14 +67,18 @@ export class RootScene extends Scene {
   async setScene(scene: Scene) {
     await this.loading.show();
 
-    this.removeChild(this.scene);
+    if (this.scene) {
+      this.removeChild(this.scene);
+    }
     this.scene = scene;
     this.addChildAt(scene, 0);
 
     await this.loading.hide();
+
+    this.scene.init();
   }
 
   update() {
-    this.scene.update();
+    this.scene?.update();
   }
 }
