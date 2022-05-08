@@ -41,11 +41,18 @@ class ActionButton extends Button {
   }
 }
 
+enum GameMode {
+  PLAYER_VS_CPU,
+  CPU_VS_CPU,
+}
+
 export class MenuScene extends Scene {
   title = new Title();
   playerVsCpuBtn = new ActionButton('Player vs CPU');
   cpuVsCpuBtn = new ActionButton('CPU vs CPU');
   settings = new BattleSettings();
+
+  gameMode?: GameMode;
 
   constructor() {
     super();
@@ -77,15 +84,37 @@ export class MenuScene extends Scene {
   }
 
   handlePlayerMode = () => {
+    this.gameMode = GameMode.PLAYER_VS_CPU;
     this.settings.show(true);
   };
 
   handleCpuMode = () => {
+    this.gameMode = GameMode.CPU_VS_CPU;
     this.settings.show(true);
   };
 
   handlePlay = (data: BattleConfig) => {
-    // TODO: handle play mode: player | cpu
+    switch (this.gameMode) {
+      case GameMode.PLAYER_VS_CPU:
+        this.setPlayerVsCpuConfig(data);
+        break;
+      case GameMode.CPU_VS_CPU:
+        this.setCpuVsCpuConfig(data);
+        break;
+      default:
+        throw new Error(`Unknown mode: "${this.gameMode}"`);
+    }
+
     this.emit('play', data);
   };
+
+  setPlayerVsCpuConfig(data: BattleConfig) {
+    data.team1.controlled = true;
+    data.team2.controlled = false;
+  }
+
+  setCpuVsCpuConfig(data: BattleConfig) {
+    data.team1.controlled = false;
+    data.team2.controlled = false;
+  }
 }

@@ -55,12 +55,9 @@ class TeamSettings extends PIXI.Container {
   title = new PIXI.Text('Team');
   teamName = new TextInput(inputConfig);
   counter = new Counter(2, 1, 6);
-  controlled: boolean; // TODO: remove
 
-  constructor(title: string, teamName: string, controlled: boolean) {
+  constructor(title: string, teamName: string) {
     super();
-
-    this.controlled = controlled;
 
     this.pivot.set(116, 130);
 
@@ -79,19 +76,15 @@ class TeamSettings extends PIXI.Container {
   }
 
   getData() {
-    return new TeamConfig(
-      this.teamName.text,
-      this.counter.count,
-      this.controlled
-    );
+    return new TeamConfig(this.teamName.text, this.counter.count, false);
   }
 }
 
 export class BattleSettings extends PIXI.Container {
   bg = new PanelBackground();
   playBtn = new PlayButton('PLAY!');
-  team1 = new TeamSettings('Team 1', 'Left', true);
-  team2 = new TeamSettings('Team 2', 'Right', false);
+  team1 = new TeamSettings('Team 1', 'Left');
+  team2 = new TeamSettings('Team 2', 'Right');
   closeBtn = new Button(PIXI.Texture.from('btnClose2'));
 
   constructor() {
