@@ -1,7 +1,7 @@
 import * as PIXI from 'pixi.js';
 import { ActionButtonsComponent } from '../components/action-buttons';
 import { GameOverComponent } from '../components/game-over';
-import { EnvironmentComponent } from '../components/environment';
+import { BattleWorldComponent } from '../components/battle-world';
 import { UnitComponent } from '../components/unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
@@ -13,7 +13,7 @@ import { Scene } from './_scene';
 export class BattleScene extends Scene {
   battle: BattleService;
 
-  environment = new EnvironmentComponent();
+  environment = new BattleWorldComponent();
   gameOverMessage = new GameOverComponent();
   actions = new ActionButtonsComponent();
   units: UnitComponent[];

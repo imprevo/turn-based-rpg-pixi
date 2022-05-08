@@ -1,6 +1,6 @@
 import * as PIXI from 'pixi.js';
 
-class Background extends PIXI.Sprite {
+export class Background extends PIXI.Sprite {
   constructor() {
     super(PIXI.Texture.from('background'));
 
@@ -11,7 +11,7 @@ class Background extends PIXI.Sprite {
   }
 }
 
-class Ground extends PIXI.Sprite {
+export class Ground extends PIXI.Sprite {
   constructor() {
     super(PIXI.Texture.from('ground'));
 
@@ -21,7 +21,7 @@ class Ground extends PIXI.Sprite {
   }
 }
 
-class Sun extends PIXI.Sprite {
+export class Sun extends PIXI.Sprite {
   rotationSpeed = 0.002;
 
   constructor(x: number, y: number) {
@@ -38,7 +38,7 @@ class Sun extends PIXI.Sprite {
   }
 }
 
-class Dock extends PIXI.Sprite {
+export class Dock extends PIXI.Sprite {
   constructor(x: number, y: number) {
     super(PIXI.Texture.from('dock'));
 
@@ -49,7 +49,7 @@ class Dock extends PIXI.Sprite {
   }
 }
 
-class Lantern extends PIXI.Sprite {
+export class Lantern extends PIXI.Sprite {
   constructor(x: number, y: number) {
     super(PIXI.Texture.from('lantern'));
 
@@ -60,7 +60,7 @@ class Lantern extends PIXI.Sprite {
   }
 }
 
-class Puddle1 extends PIXI.Sprite {
+export class Puddle1 extends PIXI.Sprite {
   constructor(x: number, y: number) {
     super(PIXI.Texture.from('puddle1'));
 
@@ -71,7 +71,7 @@ class Puddle1 extends PIXI.Sprite {
   }
 }
 
-class Puddle2 extends PIXI.Sprite {
+export class Puddle2 extends PIXI.Sprite {
   constructor(x: number, y: number) {
     super(PIXI.Texture.from('puddle2'));
 
@@ -82,7 +82,7 @@ class Puddle2 extends PIXI.Sprite {
   }
 }
 
-class Garbage extends PIXI.Sprite {
+export class Garbage extends PIXI.Sprite {
   constructor(x: number, y: number) {
     super(PIXI.Texture.from('garbage'));
 
@@ -90,36 +90,5 @@ class Garbage extends PIXI.Sprite {
     this.y = y;
     this.scale.x = 3;
     this.scale.y = 3;
-  }
-}
-
-// TODO: get canvas size and scale from arguments?
-export class EnvironmentComponent extends PIXI.Container {
-  background = new Background();
-  ground = new Ground();
-  sun = new Sun(680, 50);
-  dock = new Dock(500, 200);
-  lantern = new Lantern(350, 150);
-  puddle1 = new Puddle1(350, 500);
-  puddle2 = new Puddle2(100, 174);
-  garbage = new Garbage(270, 350);
-
-  constructor() {
-    super();
-
-    this.addChild(
-      this.background,
-      this.ground,
-      this.sun,
-      this.dock,
-      this.lantern,
-      this.puddle1,
-      this.puddle2,
-      this.garbage
-    );
-  }
-
-  update() {
-    this.sun.update();
   }
 }

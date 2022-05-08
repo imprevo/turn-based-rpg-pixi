@@ -1,8 +1,9 @@
 import * as PIXI from 'pixi.js';
 import { BattleConfig } from '../models/battle-config';
 import { Button } from '../components/button';
-import { Scene } from './_scene';
 import { BattleSettings } from '../components/battle-settings';
+import { MenuWorldComponent } from '../components/menu-world';
+import { Scene } from './_scene';
 
 const titleStyle = new PIXI.TextStyle({
   fontSize: 50,
@@ -12,6 +13,11 @@ const titleStyle = new PIXI.TextStyle({
   dropShadowBlur: 4,
   dropShadowAngle: Math.PI / 6,
   dropShadowDistance: 6,
+});
+
+const createdByStyle = new PIXI.TextStyle({
+  fontSize: 24,
+  fill: 0xffffff,
 });
 
 const buttonStyle = new PIXI.TextStyle({
@@ -25,6 +31,14 @@ const buttonStyle = new PIXI.TextStyle({
 class Title extends PIXI.Text {
   constructor() {
     super('Turn-based RPG', titleStyle);
+  }
+}
+
+class CreatedBy extends PIXI.Text {
+  constructor() {
+    super('Created by @imprevo', createdByStyle);
+
+    this.anchor.set(1);
   }
 }
 
@@ -47,7 +61,9 @@ enum GameMode {
 }
 
 export class MenuScene extends Scene {
+  environment = new MenuWorldComponent();
   title = new Title();
+  createdBy = new CreatedBy();
   playerVsCpuBtn = new ActionButton('Player vs CPU');
   cpuVsCpuBtn = new ActionButton('CPU vs CPU');
   settings = new BattleSettings();
@@ -58,7 +74,10 @@ export class MenuScene extends Scene {
     super();
 
     this.title.x = 50;
-    this.title.y = 50;
+    this.title.y = 30;
+
+    this.createdBy.x = 750;
+    this.createdBy.y = 570;
 
     this.playerVsCpuBtn.x = 630;
     this.playerVsCpuBtn.y = 300;
@@ -69,7 +88,9 @@ export class MenuScene extends Scene {
     this.settings.y = 100;
 
     this.addChild(
+      this.environment,
       this.title,
+      this.createdBy,
       this.playerVsCpuBtn,
       this.cpuVsCpuBtn,
       this.settings
