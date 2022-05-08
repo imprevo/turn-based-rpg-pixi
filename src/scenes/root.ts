@@ -7,15 +7,22 @@ import { BattleScene } from './battle';
 import { BattleCreator } from '../services/battle-creator';
 import { MenuScene } from './menu';
 import { Scene } from './_scene';
+import { TransitionScene } from './transition';
 
 export class RootScene extends Scene {
   scene: Scene;
+  loading: TransitionScene;
   battleCreator = new BattleCreator();
 
   constructor() {
     super();
     this.scene = this.createMenuScene();
-    this.addChild(this.scene);
+    this.loading = this.createLoadingScene();
+    this.addChild(this.scene, this.loading);
+  }
+
+  createLoadingScene() {
+    return new TransitionScene();
   }
 
   createMenuScene() {
@@ -57,13 +64,17 @@ export class RootScene extends Scene {
     this.setScene(menu);
   };
 
-  setScene(scene: Scene) {
+  async setScene(scene: Scene) {
+    await this.loading.show();
+
     this.removeChild(this.scene);
     this.scene = scene;
-    this.addChild(scene);
+    this.addChildAt(scene, 0);
+
+    await this.loading.hide();
   }
 
   update() {
-    this.scene.update?.();
+    this.scene.update();
   }
 }
