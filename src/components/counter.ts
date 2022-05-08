@@ -18,7 +18,9 @@ export class Counter extends PIXI.Container {
 
     this.countText.anchor.set(0.5);
     this.decreaseBtn.x = -60;
+    this.decreaseBtn.scale.set(0.7);
     this.increaseBtn.x = 60;
+    this.increaseBtn.scale.set(0.7);
 
     this.updateCount(count);
 

@@ -6,7 +6,10 @@ import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
 import iconArrowLeftImg from './assets/pro-ui-light-minimalism/09_IconArrowLeft.png';
 import iconArrowRightImg from './assets/pro-ui-light-minimalism/09_IconArrowRight.png';
 import buttonImg from './assets/pro-ui-light-minimalism/Button.png';
-import panel2Img from './assets/pro-ui-light-minimalism/Panel2.png';
+import button12Img from './assets/pro-ui-light-minimalism/Button12.png';
+import btnClose2Img from './assets/pro-ui-light-minimalism/BtnClose2.png';
+// import panel2Img from './assets/pro-ui-light-minimalism/Panel2.png';
+import panel8Img from './assets/pro-ui-light-minimalism/Panel8.png';
 import { LifeBarBuilder } from './services/spritesheet/life-bars-builder';
 import { PlanetSpritesheetBuilder } from './services/spritesheet/planet-builder';
 import {
@@ -34,7 +37,10 @@ function loadTextures(): Promise<void> {
   app.loader.add('iconArrowLeft', iconArrowLeftImg);
   app.loader.add('iconArrowRight', iconArrowRightImg);
   app.loader.add('button', buttonImg);
-  app.loader.add('panel2', panel2Img);
+  app.loader.add('button12', button12Img);
+  app.loader.add('btnClose2', btnClose2Img);
+  // app.loader.add('panel2', panel2Img);
+  app.loader.add('panel8', panel8Img);
 
   return new Promise((resolve) => app.loader.load(() => resolve()));
 }
