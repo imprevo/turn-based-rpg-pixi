@@ -1,7 +1,4 @@
-import * as PIXI from 'pixi.js';
 import { BattleConfig } from '../models/battle-config';
-import { AIController } from '../services/ai-controller';
-import { BattleService } from '../services/battle';
 import { PlayerController } from '../services/player-controller';
 import { BattleScene } from './battle';
 import { BattleCreator } from '../services/battle-creator';
@@ -11,35 +8,20 @@ import { TransitionScene } from './transition';
 
 export class RootScene extends Scene {
   scene?: Scene;
-  loading: TransitionScene;
+  loading = new TransitionScene();
   battleCreator = new BattleCreator();
 
   constructor() {
     super();
 
-    this.loading = this.createLoadingScene();
     this.addChild(this.loading);
     this.showMenuScene();
   }
 
-  createLoadingScene() {
-    return new TransitionScene();
-  }
-
-  createMenuScene() {
-    const menu = new MenuScene();
-
-    menu.on('play', this.showBattleScene);
-
-    return menu;
-  }
-
-  createBattleScene(
-    battle: BattleService,
-    ctrls: (PlayerController | AIController)[]
-  ) {
+  showBattleScene = (data: BattleConfig) => {
+    const battle = this.battleCreator.createBattle(data);
+    const ctrls = this.battleCreator.createControllers(battle, data);
     const battleScene = new BattleScene(battle);
-    battleScene.on('exit', this.showMenuScene);
 
     ctrls.forEach((ctrl) => {
       if (ctrl instanceof PlayerController) {
@@ -47,19 +29,16 @@ export class RootScene extends Scene {
       }
     });
 
-    return battleScene;
-  }
-
-  showBattleScene = (data: BattleConfig) => {
-    const battle = this.battleCreator.createBattle(data);
-    const ctrls = this.battleCreator.createControllers(battle, data);
-    const battleScene = this.createBattleScene(battle, ctrls);
+    battleScene.on('restart', () => this.showBattleScene(data));
+    battleScene.on('exit', this.showMenuScene);
 
     this.setScene(battleScene);
   };
 
   showMenuScene = () => {
-    const menu = this.createMenuScene();
+    const menu = new MenuScene();
+
+    menu.on('play', this.showBattleScene);
 
     this.setScene(menu);
   };

@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js';
 import { ActionButtonsComponent } from '../components/action-buttons';
 import { GameOverComponent } from '../components/game-over';
 import { BattleWorldComponent } from '../components/battle-world';
@@ -39,10 +38,6 @@ export class BattleScene extends Scene {
     wait(1000).then(() => this.battle.init());
   }
 
-  restart() {
-    this.emit('exit');
-  }
-
   update() {
     this.environment.update();
   }
@@ -55,7 +50,11 @@ export class BattleScene extends Scene {
     });
 
     this.gameOverMessage.on('restart', () => {
-      this.restart();
+      this.emit('restart');
+    });
+
+    this.gameOverMessage.on('exit', () => {
+      this.emit('exit');
     });
   }
 

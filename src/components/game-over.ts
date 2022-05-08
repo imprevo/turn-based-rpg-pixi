@@ -23,7 +23,7 @@ const messageStyle = new PIXI.TextStyle({
 });
 
 const buttonStyle = new PIXI.TextStyle({
-  fontSize: 40,
+  fontSize: 34,
   fill: 0xb6b2ff,
   dropShadow: true,
   dropShadowColor: '#000000',
@@ -31,14 +31,15 @@ const buttonStyle = new PIXI.TextStyle({
 });
 
 class RestartButton extends Button {
-  restartBtnText = new PIXI.Text('RESTART?', buttonStyle);
+  btnText = new PIXI.Text('', buttonStyle);
 
-  constructor() {
+  constructor(text: string) {
     super(PIXI.Texture.from('button'));
 
-    this.restartBtnText.anchor.set(0.5);
+    this.btnText.text = text;
+    this.btnText.anchor.set(0.5);
 
-    this.addChild(this.restartBtnText);
+    this.addChild(this.btnText);
   }
 }
 
@@ -46,7 +47,8 @@ export class GameOverComponent extends PIXI.Container {
   title = new PIXI.Text('GAME OVER', titleStyle);
   message = new PIXI.Text('', messageStyle);
   shadow = new PIXI.Graphics();
-  restartBtn = new RestartButton();
+  restartBtn = new RestartButton('TRY AGAIN');
+  exitBtn = new RestartButton('EXIT');
 
   constructor() {
     super();
@@ -67,17 +69,31 @@ export class GameOverComponent extends PIXI.Container {
     this.restartBtn.x = 400;
     this.restartBtn.y = 400;
 
-    this.addChild(this.shadow, this.title, this.message, this.restartBtn);
+    this.exitBtn.x = 400;
+    this.exitBtn.y = 500;
+
+    this.addChild(
+      this.shadow,
+      this.title,
+      this.message,
+      this.restartBtn,
+      this.exitBtn
+    );
 
     this.addListeners();
   }
 
   addListeners() {
     this.restartBtn.on('click', this.handleRestart);
+    this.exitBtn.on('click', this.handleExit);
   }
 
   handleRestart = () => {
     this.emit('restart');
+  };
+
+  handleExit = () => {
+    this.emit('exit');
   };
 
   show(message: string) {
@@ -90,6 +106,9 @@ export class GameOverComponent extends PIXI.Container {
 
     this.restartBtn.y = 800;
     new Tween(this.restartBtn).to({ y: 400 }, 1000).start();
+
+    this.exitBtn.y = 900;
+    new Tween(this.exitBtn).to({ y: 500 }, 1000).start();
 
     this.visible = true;
   }

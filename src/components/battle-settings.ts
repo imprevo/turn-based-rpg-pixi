@@ -124,6 +124,7 @@ export class BattleSettings extends PIXI.Container {
 
   handleClose = () => {
     this.show(false);
+    this.emit('close');
   };
 
   show(show: boolean, skipAnimation = false) {
