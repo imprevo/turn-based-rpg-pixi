@@ -1,3 +1,4 @@
+import { Easing, Tween } from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
 import { BattleConfig } from '../models/battle-config';
 import { Button } from '../components/button';
@@ -79,9 +80,9 @@ export class MenuScene extends Scene {
     this.createdBy.x = 750;
     this.createdBy.y = 570;
 
-    this.playerVsCpuBtn.x = 630;
+    this.playerVsCpuBtn.x = 1000;
     this.playerVsCpuBtn.y = 300;
-    this.cpuVsCpuBtn.x = 630;
+    this.cpuVsCpuBtn.x = 1000;
     this.cpuVsCpuBtn.y = 400;
 
     this.settings.x = 500;
@@ -96,22 +97,26 @@ export class MenuScene extends Scene {
       this.settings
     );
     this.addListeners();
+    this.showMenu(true, 300);
   }
 
   addListeners() {
     this.playerVsCpuBtn.on('click', this.handlePlayerMode);
     this.cpuVsCpuBtn.on('click', this.handleCpuMode);
     this.settings.on('play', this.handlePlay);
+    this.settings.on('close', this.handleClose);
   }
 
   handlePlayerMode = () => {
     this.gameMode = GameMode.PLAYER_VS_CPU;
     this.settings.show(true);
+    this.showMenu(false);
   };
 
   handleCpuMode = () => {
     this.gameMode = GameMode.CPU_VS_CPU;
     this.settings.show(true);
+    this.showMenu(false);
   };
 
   handlePlay = (data: BattleConfig) => {
@@ -129,6 +134,10 @@ export class MenuScene extends Scene {
     this.emit('play', data);
   };
 
+  handleClose = () => {
+    this.showMenu(true);
+  };
+
   setPlayerVsCpuConfig(data: BattleConfig) {
     data.team1.controlled = true;
     data.team2.controlled = false;
@@ -137,5 +146,20 @@ export class MenuScene extends Scene {
   setCpuVsCpuConfig(data: BattleConfig) {
     data.team1.controlled = false;
     data.team2.controlled = false;
+  }
+
+  showMenu(show: boolean, delay = 0) {
+    const x = show ? 630 : 1000;
+    const easing = show ? Easing.Back.In : Easing.Back.Out;
+    new Tween(this.playerVsCpuBtn)
+      .to({ x }, 900)
+      .delay(delay)
+      .easing(easing)
+      .start();
+    new Tween(this.cpuVsCpuBtn)
+      .to({ x }, 1000)
+      .delay(delay)
+      .easing(easing)
+      .start();
   }
 }
