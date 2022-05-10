@@ -1,4 +1,5 @@
 import { Team } from '../../models/team';
+import { wait } from '../../utils/promise';
 
 const DEFAULT_DELAY = 1000;
 
@@ -13,5 +14,21 @@ export abstract class Action {
     this.delay = delay;
   }
 
-  abstract execute(): void;
+  async execute() {
+    if (!this.canExecute()) {
+      throw new Error(`Can't execute action ${this.constructor.name}!`);
+    }
+
+    this.action();
+
+    if (this.delay) {
+      await wait(this.delay);
+    }
+  }
+
+  canExecute() {
+    return true;
+  }
+
+  abstract action(): void;
 }

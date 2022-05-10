@@ -52,12 +52,9 @@ export class TurnSystem {
     }
 
     this.isBlocked = true;
-    this.turnPoints -= action.points;
+    this.turnPoints = Math.max(0, this.turnPoints - action.points);
 
-    action.execute();
-    if (action.delay) {
-      await wait(action.delay);
-    }
+    await action.execute();
 
     this.isBlocked = false;
   }

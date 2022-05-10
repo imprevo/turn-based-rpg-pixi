@@ -5,6 +5,7 @@ import { Action } from './_action';
 export class HealAction extends Action {
   unit: Unit;
   target: Unit;
+  heal = 2;
 
   constructor(team: Team, target: Unit) {
     super(team, 1);
@@ -12,7 +13,7 @@ export class HealAction extends Action {
     this.target = target;
   }
 
-  execute() {
-    this.target.heal();
+  action() {
+    this.target.heal(this.heal);
   }
 }

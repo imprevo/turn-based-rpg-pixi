@@ -12,7 +12,22 @@ export class AttackAction extends Action {
     this.target = target;
   }
 
-  execute() {
-    this.unit.attack(this.target);
+  canExecute() {
+    return !this.target.isDead;
+  }
+
+  action() {
+    this.target.takeDamage(this.calculateDamage());
+    this.unit.attack();
+  }
+
+  calculateDamage() {
+    let actualDamage = this.unit.damage.physicalDamage;
+
+    if (this.target.isDefense) {
+      actualDamage = Math.floor(actualDamage / 2);
+    }
+
+    return Math.max(0, actualDamage);
   }
 }

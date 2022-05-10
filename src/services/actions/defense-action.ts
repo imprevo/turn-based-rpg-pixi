@@ -10,7 +10,7 @@ export class DefenseAction extends Action {
     this.unit = team.currentUnit;
   }
 
-  execute() {
+  action() {
     this.unit.defense();
   }
 }

@@ -20,7 +20,6 @@ export class Unit extends PIXI.utils.EventEmitter<
   name: string;
   stats: Stats;
   damage: Damage;
-  defenseValue = 1;
   isDefense = false;
   isActive = false;
 
@@ -40,30 +39,26 @@ export class Unit extends PIXI.utils.EventEmitter<
     this.emit('active');
   }
 
-  attack(target: Unit) {
+  attack() {
     if (this.isDead) {
       throw new Error('Unit is dead!');
     }
     this.isDefense = false;
-    target.takeDamage(this.damage);
     this.emit('attack');
   }
 
-  takeDamage(damage: Damage) {
+  takeDamage(damage: number) {
     if (this.isDead) {
       throw new Error('Unit is dead!');
     }
-    this.stats.hp -= this.calculateDamage(damage);
-    this.stats.hp = Math.max(0, this.stats.hp);
+    this.stats.hp = Math.max(0, this.stats.hp - damage);
     this.isDefense = false;
     this.emit('damage');
   }
 
-  heal() {
-    const heal = 2;
+  heal(heal: number) {
     this.isDefense = false;
-    this.stats.hp += heal;
-    this.stats.hp = Math.min(this.stats.hpMax, this.stats.hp);
+    this.stats.hp = Math.min(this.stats.hpMax, this.stats.hp + heal);
     this.emit('heal');
   }
 
@@ -72,15 +67,5 @@ export class Unit extends PIXI.utils.EventEmitter<
       throw new Error('Unit is dead!');
     }
     this.isDefense = true;
-  }
-
-  calculateDamage(damage: Damage) {
-    let actualDamage = damage.physicalDamage;
-
-    if (this.isDefense) {
-      actualDamage -= this.defenseValue;
-    }
-
-    return Math.max(0, actualDamage);
   }
 }
