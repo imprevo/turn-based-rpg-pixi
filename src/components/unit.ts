@@ -1,6 +1,7 @@
 import { Tween } from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
 import { Unit } from '../models/unit';
+import { HintComponent } from './hint';
 import { HealthBarComponent } from './healh-bar';
 import {
   ChargeAnimatedSprite,
@@ -10,6 +11,13 @@ import {
   ShootAnimationSprite,
   WakeAnimationSprite,
 } from './unit-animations';
+
+const colors = {
+  DAMAGE: 0xf44336,
+  CRIT: 0xffc107,
+  MISS: 0xff5722,
+  HEAL: 0x4caf50,
+};
 
 enum UnitAnimationState {
   IDLE,
@@ -176,29 +184,36 @@ export class UnitComponent extends PIXI.Container {
 
   addListeners() {
     this.unit.on('damage', this.handleUnitDamage);
+    this.unit.on('miss', this.handleUnitMiss);
     this.unit.on('heal', this.handleUnitHeal);
     this.unit.on('attack', this.handleUnitAttack);
     this.unit.on('active', this.handleActiveUnit);
     this.pickArea.on('click', this.handlePickUnit);
   }
 
-  handleUnitDamage = () => {
+  handleUnitDamage = (damage: number, isCrit: boolean) => {
+    const hintColor = isCrit ? colors.CRIT : colors.DAMAGE;
+    this.showHint(`-${damage}`, hintColor);
     this.updateHealthbar();
     if (this.unit.isDead) {
       this.unitAnimation.runAnimation(UnitAnimationState.DEATH);
     } else {
-      // TODO: runs on any stats changes. Not only health!
-      this.unitAnimation.setBlink(0xff0000);
+      this.unitAnimation.setBlink(colors.DAMAGE);
     }
     this.unitWasDead = this.unit.isDead;
   };
 
-  handleUnitHeal = () => {
+  handleUnitMiss = () => {
+    this.showHint('MISS', colors.MISS);
+  };
+
+  handleUnitHeal = (heal: number) => {
+    this.showHint(`+${heal}`, colors.HEAL);
     this.updateHealthbar();
     if (this.unitWasDead) {
       this.unitAnimation.runAnimation(UnitAnimationState.WAKE);
     }
-    this.unitAnimation.setBlink(0x00ff00);
+    this.unitAnimation.setBlink(colors.HEAL);
     this.unitWasDead = this.unit.isDead;
   };
 
@@ -224,5 +239,10 @@ export class UnitComponent extends PIXI.Container {
 
   setPickable(pickable: boolean) {
     this.pickArea.visible = pickable;
+  }
+
+  showHint(text: string, color: number) {
+    const hint = new HintComponent(text, color);
+    hint.show(this);
   }
 }

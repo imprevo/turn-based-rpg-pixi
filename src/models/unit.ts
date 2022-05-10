@@ -51,17 +51,17 @@ export class Unit extends PIXI.utils.EventEmitter<
     this.emit('miss');
   }
 
-  takeDamage(damage: number) {
+  takeDamage(damage: number, isCrit: boolean) {
     this.shouldBeAlive();
     this.stats.hp = Math.max(0, this.stats.hp - damage);
     this.isDefense = false;
-    this.emit('damage');
+    this.emit('damage', damage, isCrit);
   }
 
   heal(heal: number) {
     this.isDefense = false;
     this.stats.hp = Math.min(this.stats.hpMax, this.stats.hp + heal);
-    this.emit('heal');
+    this.emit('heal', heal);
   }
 
   defense() {

@@ -27,15 +27,15 @@ export class AttackAction extends Action {
 
     switch (attackType) {
       case AttackType.DAMAGE:
-        this.target.takeDamage(this.calculateDamage());
+        this.target.takeDamage(this.calculateDamage(), false);
         this.unit.attack();
         break;
       case AttackType.CRITICAL_DAMAGE:
-        this.target.takeDamage(this.calculateCriticalDamage());
+        this.target.takeDamage(this.calculateCriticalDamage(), true);
         this.unit.attack();
         break;
       case AttackType.MISS:
-        this.unit.miss();
+        this.target.miss();
         break;
       default:
         throw new Error(`Unknown attack type: "${attackType}"`);
