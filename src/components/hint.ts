@@ -6,8 +6,9 @@ export class HintComponent extends PIXI.Text {
     super(text, {
       fontSize: 16,
       fill: color,
+      stroke: color,
+      strokeThickness: 2,
     });
-    this.y = -70;
     this.anchor.set(0.5);
   }
 

@@ -15,7 +15,7 @@ import {
 const colors = {
   DAMAGE: 0xf44336,
   CRIT: 0xffc107,
-  MISS: 0xff5722,
+  MISS: 0x673ab7,
   HEAL: 0x4caf50,
 };
 
@@ -243,6 +243,7 @@ export class UnitComponent extends PIXI.Container {
 
   showHint(text: string, color: number) {
     const hint = new HintComponent(text, color);
+    hint.y = -70;
     hint.show(this);
   }
 }
