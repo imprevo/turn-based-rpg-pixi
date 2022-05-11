@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 
+// TODO: add disable state
 export class Button extends PIXI.Sprite {
   isDown = false;
   isOver = false;

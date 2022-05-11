@@ -1,106 +1,75 @@
 import * as PIXI from 'pixi.js';
 import * as TWEEN from '@tweenjs/tween.js';
 import { Button } from './button';
+import { AbilityList, AbilityType } from '../models/abilities';
 
 const BTN_CELL_SIZE = 64;
 
-class AttackButton extends Button {
-  constructor() {
-    super(PIXI.Texture.from('iconAttack'));
+class AbilityButton extends Button {
+  eventType: string;
+
+  constructor(texture: PIXI.Texture, eventType: string) {
+    super(texture);
+    this.eventType = eventType;
   }
 }
 
-class EnergyButton extends Button {
+class AttackButton extends AbilityButton {
   constructor() {
-    super(PIXI.Texture.from('iconEnergy'));
+    super(PIXI.Texture.from('iconAttack'), 'attack');
   }
 }
 
-class ShieldButton extends Button {
+class AoeAttackButton extends AbilityButton {
   constructor() {
-    super(PIXI.Texture.from('iconShield'));
+    super(PIXI.Texture.from('iconEnergy'), 'aoeAttack');
   }
 }
 
-class PlusButton extends Button {
+class DefenseButton extends AbilityButton {
   constructor() {
-    super(PIXI.Texture.from('iconPlus'));
+    super(PIXI.Texture.from('iconShield'), 'defence');
   }
 }
 
-class HeartButton extends Button {
+class HealButton extends AbilityButton {
   constructor() {
-    super(PIXI.Texture.from('iconHeart'));
+    super(PIXI.Texture.from('iconPlus'), 'heal');
+  }
+}
+
+class ReviveButton extends AbilityButton {
+  constructor() {
+    super(PIXI.Texture.from('iconHeart'), 'revive');
   }
 }
 
 export class ActionButtonsComponent extends PIXI.Container {
-  attackButton = new AttackButton();
-  aoeAttackButton = new EnergyButton();
-  defenceButton = new ShieldButton();
-  healButton = new PlusButton();
-  reviveButton = new HeartButton();
-
   constructor() {
     super();
 
     this.x = 400;
     this.y = 650;
-
-    this.alignButtons([
-      this.attackButton,
-      this.aoeAttackButton,
-      this.defenceButton,
-      this.healButton,
-      this.reviveButton,
-    ]);
-
-    this.addChild(
-      this.attackButton,
-      this.aoeAttackButton,
-      this.defenceButton,
-      this.healButton,
-      this.reviveButton
-    );
   }
 
-  addListeners() {
-    this.removeListeners();
+  setAbilities(abilities: AbilityList) {
+    this.removeChildren();
 
-    this.attackButton.on('click', this.doAttack);
-    this.aoeAttackButton.on('click', this.doAoeAttack);
-    this.defenceButton.on('click', this.doDefence);
-    this.healButton.on('click', this.doHeal);
-    this.reviveButton.on('click', this.doRevive);
+    // TODO: disable buttons if necessary
+    const buttons = this.getButtonsConfig(abilities);
+
+    buttons.forEach((button) => {
+      button.on('click', () => this.emit(button.eventType));
+    });
+
+    this.alignButtons(buttons);
+    this.addChild(...buttons);
   }
 
-  removeListeners() {
-    this.attackButton.off('click', this.doAttack);
-    this.aoeAttackButton.off('click', this.doAoeAttack);
-    this.defenceButton.off('click', this.doDefence);
-    this.healButton.off('click', this.doHeal);
-    this.reviveButton.off('click', this.doRevive);
+  show(show: boolean) {
+    const y = show ? 550 : 650;
+    new TWEEN.Tween(this).to({ y }, 300).start();
   }
-
-  doAttack = () => {
-    this.emit('attack');
-  };
-
-  doAoeAttack = () => {
-    this.emit('aoeAttack');
-  };
-
-  doDefence = () => {
-    this.emit('defence');
-  };
-
-  doHeal = () => {
-    this.emit('heal');
-  };
-
-  doRevive = () => {
-    this.emit('revive');
-  };
 
   alignButtons(buttons: Button[]) {
     const offset = ((buttons.length - 1) * BTN_CELL_SIZE) / 2;
@@ -110,14 +79,26 @@ export class ActionButtonsComponent extends PIXI.Container {
     });
   }
 
-  show(show: boolean) {
-    const y = show ? 550 : 650;
-    new TWEEN.Tween(this).to({ y }, 300).start();
+  getButtonsConfig(abilities: AbilityList) {
+    return abilities.list
+      .map((ability) => this.getAbilityButtonByType(ability.type))
+      .filter((btn): btn is AbilityButton => btn !== null);
+  }
 
-    if (show) {
-      this.addListeners();
-    } else {
-      this.removeListeners();
+  getAbilityButtonByType(abilityType: AbilityType) {
+    switch (abilityType) {
+      case AbilityType.ATTACK:
+        return new AttackButton();
+      case AbilityType.AOE_ATTACK:
+        return new AoeAttackButton();
+      case AbilityType.DEFENSE:
+        return new DefenseButton();
+      case AbilityType.HEAL:
+        return new HealButton();
+      case AbilityType.REVIVE:
+        return new ReviveButton();
+      default:
+        return null;
     }
   }
 }

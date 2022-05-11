@@ -17,11 +17,11 @@ export class UnitQueue {
     this.currentUnit = this.getNextUnit();
     this.team.currentUnit = this.currentUnit;
     this.isFirstTurn = false;
-    this.currentUnit.setActive(true);
+    this.currentUnit.startTurn();
   }
 
   endTurn() {
-    this.currentUnit.setActive(false);
+    this.currentUnit.endTurn();
   }
 
   getOrderedAliveUnits() {

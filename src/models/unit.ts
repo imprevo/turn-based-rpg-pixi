@@ -1,4 +1,5 @@
 import * as PIXI from 'pixi.js';
+import { AbilityList, AbilityType } from './abilities';
 
 export class Stats {
   hp: number;
@@ -22,6 +23,8 @@ export class Unit extends PIXI.utils.EventEmitter<
   damage: Damage;
   isDefense = false;
   isActive = false;
+
+  abilities = new AbilityList();
 
   constructor(name: string, hp: number, damage: number) {
     super();
@@ -74,5 +77,15 @@ export class Unit extends PIXI.utils.EventEmitter<
     if (this.isDead) {
       throw new Error('Unit is dead!');
     }
+  }
+
+  startTurn() {
+    this.setActive(true);
+    this.abilities.startTurn();
+  }
+
+  endTurn() {
+    this.setActive(false);
+    this.abilities.endTurn();
   }
 }

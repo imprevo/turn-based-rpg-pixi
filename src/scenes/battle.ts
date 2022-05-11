@@ -154,6 +154,8 @@ export class BattleScene extends Scene {
 
   checkTurn(playerController: PlayerController) {
     if (playerController.checkIsTurnAvailable()) {
+      // TODO: fix encapsulation
+      this.actions.setAbilities(playerController.team.currentUnit.abilities);
       this.showActions(true);
     } else {
       this.showActions(false);
