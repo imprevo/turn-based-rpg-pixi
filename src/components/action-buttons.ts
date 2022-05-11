@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js';
 import * as TWEEN from '@tweenjs/tween.js';
 import { Button } from './button';
 
+const BTN_CELL_SIZE = 64;
+
 class AttackButton extends Button {
   constructor() {
     super(PIXI.Texture.from('iconAttack'));
@@ -20,10 +22,17 @@ class PlusButton extends Button {
   }
 }
 
+class HeartButton extends Button {
+  constructor() {
+    super(PIXI.Texture.from('iconHeart'));
+  }
+}
+
 export class ActionButtonsComponent extends PIXI.Container {
   attackButton = new AttackButton();
   defenceButton = new ShieldButton();
   healButton = new PlusButton();
+  reviveButton = new HeartButton();
 
   constructor() {
     super();
@@ -31,10 +40,19 @@ export class ActionButtonsComponent extends PIXI.Container {
     this.x = 400;
     this.y = 650;
 
-    this.attackButton.x = -64;
-    this.healButton.x = 64;
+    this.alignButtons([
+      this.attackButton,
+      this.defenceButton,
+      this.healButton,
+      this.reviveButton,
+    ]);
 
-    this.addChild(this.attackButton, this.defenceButton, this.healButton);
+    this.addChild(
+      this.attackButton,
+      this.defenceButton,
+      this.healButton,
+      this.reviveButton
+    );
   }
 
   addListeners() {
@@ -43,12 +61,14 @@ export class ActionButtonsComponent extends PIXI.Container {
     this.attackButton.on('click', this.doAttack);
     this.defenceButton.on('click', this.doDefence);
     this.healButton.on('click', this.doHeal);
+    this.reviveButton.on('click', this.doRevive);
   }
 
   removeListeners() {
     this.attackButton.off('click', this.doAttack);
     this.defenceButton.off('click', this.doDefence);
     this.healButton.off('click', this.doHeal);
+    this.reviveButton.off('click', this.doRevive);
   }
 
   doAttack = () => {
@@ -62,6 +82,18 @@ export class ActionButtonsComponent extends PIXI.Container {
   doHeal = () => {
     this.emit('heal');
   };
+
+  doRevive = () => {
+    this.emit('revive');
+  };
+
+  alignButtons(buttons: Button[]) {
+    const offset = ((buttons.length - 1) * BTN_CELL_SIZE) / 2;
+
+    buttons.forEach((btn, index) => {
+      btn.x = BTN_CELL_SIZE * index - offset;
+    });
+  }
 
   show(show: boolean) {
     const y = show ? 550 : 650;

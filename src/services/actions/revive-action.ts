@@ -2,7 +2,7 @@ import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
 import { Action } from './_action';
 
-export class HealAction extends Action {
+export class ReviveAction extends Action {
   unit: Unit;
   target: Unit;
   heal = 2;
@@ -14,7 +14,7 @@ export class HealAction extends Action {
   }
 
   canExecute() {
-    return !this.target.isDead;
+    return this.target.isDead;
   }
 
   action() {

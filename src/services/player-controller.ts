@@ -3,6 +3,7 @@ import { Unit } from '../models/unit';
 import { AttackAction } from './actions/attack-action';
 import { DefenseAction } from './actions/defense-action';
 import { HealAction } from './actions/heal-action';
+import { ReviveAction } from './actions/revive-action';
 import { BattleService } from './battle';
 
 export class PlayerController {
@@ -26,6 +27,11 @@ export class PlayerController {
 
   heal(target: Unit) {
     const action = new HealAction(this.team, target);
+    this.battle.doAction(action);
+  }
+
+  revive(target: Unit) {
+    const action = new ReviveAction(this.team, target);
     this.battle.doAction(action);
   }
 

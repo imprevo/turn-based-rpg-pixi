@@ -1,6 +1,7 @@
 import * as TWEEN from '@tweenjs/tween.js';
 import * as PIXI from 'pixi.js';
 import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
+import iconHeartImg from './assets/pro-ui-light-minimalism/04_IconLive_Heart_Love.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
 import iconArrowLeftImg from './assets/pro-ui-light-minimalism/09_IconArrowLeft.png';
@@ -33,6 +34,7 @@ export const app = new PIXI.Application({
 
 function loadTextures(): Promise<void> {
   app.loader.add('iconPlus', iconPlusImg);
+  app.loader.add('iconHeart', iconHeartImg);
   app.loader.add('iconAttack', iconAttackImg);
   app.loader.add('iconShield', iconShieldImg);
   app.loader.add('iconArrowLeft', iconArrowLeftImg);

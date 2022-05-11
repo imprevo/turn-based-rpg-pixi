@@ -80,8 +80,20 @@ export class BattleScene extends Scene {
       this.showActions(false);
     });
     this.actions.on('heal', () => {
-      this.onceUnitPick(playerUnits, (target) => {
+      const aliveUnits = playerUnits.filter(
+        (component) => !component.unit.isDead
+      );
+      this.onceUnitPick(aliveUnits, (target) => {
         playerController.heal(target);
+        this.showActions(false);
+      });
+    });
+    this.actions.on('revive', () => {
+      const aliveUnits = playerUnits.filter(
+        (component) => component.unit.isDead
+      );
+      this.onceUnitPick(aliveUnits, (target) => {
+        playerController.revive(target);
         this.showActions(false);
       });
     });
