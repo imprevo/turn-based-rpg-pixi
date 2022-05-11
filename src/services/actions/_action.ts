@@ -19,7 +19,7 @@ export abstract class Action {
       throw new Error(`Can't execute action ${this.constructor.name}!`);
     }
 
-    this.action();
+    await this.action();
 
     if (this.delay) {
       await wait(this.delay);
@@ -30,5 +30,5 @@ export abstract class Action {
     return true;
   }
 
-  abstract action(): void;
+  protected abstract action(): Promise<void> | void;
 }

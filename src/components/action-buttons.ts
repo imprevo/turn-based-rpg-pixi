@@ -10,6 +10,12 @@ class AttackButton extends Button {
   }
 }
 
+class EnergyButton extends Button {
+  constructor() {
+    super(PIXI.Texture.from('iconEnergy'));
+  }
+}
+
 class ShieldButton extends Button {
   constructor() {
     super(PIXI.Texture.from('iconShield'));
@@ -30,6 +36,7 @@ class HeartButton extends Button {
 
 export class ActionButtonsComponent extends PIXI.Container {
   attackButton = new AttackButton();
+  aoeAttackButton = new EnergyButton();
   defenceButton = new ShieldButton();
   healButton = new PlusButton();
   reviveButton = new HeartButton();
@@ -42,6 +49,7 @@ export class ActionButtonsComponent extends PIXI.Container {
 
     this.alignButtons([
       this.attackButton,
+      this.aoeAttackButton,
       this.defenceButton,
       this.healButton,
       this.reviveButton,
@@ -49,6 +57,7 @@ export class ActionButtonsComponent extends PIXI.Container {
 
     this.addChild(
       this.attackButton,
+      this.aoeAttackButton,
       this.defenceButton,
       this.healButton,
       this.reviveButton
@@ -59,6 +68,7 @@ export class ActionButtonsComponent extends PIXI.Container {
     this.removeListeners();
 
     this.attackButton.on('click', this.doAttack);
+    this.aoeAttackButton.on('click', this.doAoeAttack);
     this.defenceButton.on('click', this.doDefence);
     this.healButton.on('click', this.doHeal);
     this.reviveButton.on('click', this.doRevive);
@@ -66,6 +76,7 @@ export class ActionButtonsComponent extends PIXI.Container {
 
   removeListeners() {
     this.attackButton.off('click', this.doAttack);
+    this.aoeAttackButton.off('click', this.doAoeAttack);
     this.defenceButton.off('click', this.doDefence);
     this.healButton.off('click', this.doHeal);
     this.reviveButton.off('click', this.doRevive);
@@ -73,6 +84,10 @@ export class ActionButtonsComponent extends PIXI.Container {
 
   doAttack = () => {
     this.emit('attack');
+  };
+
+  doAoeAttack = () => {
+    this.emit('aoeAttack');
   };
 
   doDefence = () => {

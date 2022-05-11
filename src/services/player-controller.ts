@@ -1,5 +1,6 @@
 import { Team } from '../models/team';
 import { Unit } from '../models/unit';
+import { AoeAttackAction } from './actions/aoe-attack-action';
 import { AttackAction } from './actions/attack-action';
 import { DefenseAction } from './actions/defense-action';
 import { HealAction } from './actions/heal-action';
@@ -17,6 +18,11 @@ export class PlayerController {
 
   attack(target: Unit) {
     const action = new AttackAction(this.team, target);
+    this.battle.doAction(action);
+  }
+
+  aoeAttack(targets: Unit[]) {
+    const action = new AoeAttackAction(this.team, targets);
     this.battle.doAction(action);
   }
 

@@ -4,6 +4,7 @@ import iconPlusImg from './assets/pro-ui-light-minimalism/01_IconPlus.png';
 import iconHeartImg from './assets/pro-ui-light-minimalism/04_IconLive_Heart_Love.png';
 import iconAttackImg from './assets/pro-ui-light-minimalism/16_Attack_V2.png';
 import iconShieldImg from './assets/pro-ui-light-minimalism/17_Shield.png';
+import iconEnergyImg from './assets/pro-ui-light-minimalism/08_IconZap_Energy.png';
 import iconArrowLeftImg from './assets/pro-ui-light-minimalism/09_IconArrowLeft.png';
 import iconArrowRightImg from './assets/pro-ui-light-minimalism/09_IconArrowRight.png';
 import buttonImg from './assets/pro-ui-light-minimalism/Button.png';
@@ -37,6 +38,7 @@ function loadTextures(): Promise<void> {
   app.loader.add('iconHeart', iconHeartImg);
   app.loader.add('iconAttack', iconAttackImg);
   app.loader.add('iconShield', iconShieldImg);
+  app.loader.add('iconEnergy', iconEnergyImg);
   app.loader.add('iconArrowLeft', iconArrowLeftImg);
   app.loader.add('iconArrowRight', iconArrowRightImg);
   app.loader.add('button', buttonImg);

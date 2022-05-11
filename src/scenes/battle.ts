@@ -74,6 +74,13 @@ export class BattleScene extends Scene {
         this.showActions(false);
       });
     });
+    this.actions.on('aoeAttack', () => {
+      const aliveUnits = enemyUnits
+        .filter((component) => !component.unit.isDead)
+        .map((component) => component.unit);
+      playerController.aoeAttack(aliveUnits);
+      this.showActions(false);
+    });
     this.actions.on('defence', () => {
       this.offUnitPick();
       playerController.defense();
