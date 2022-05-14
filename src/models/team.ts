@@ -14,4 +14,12 @@ export class Team {
   isEveryoneDead() {
     return this.units.every((unit) => unit.isDead);
   }
+
+  getAliveUnits() {
+    return this.units.filter((unit) => !unit.isDead);
+  }
+
+  getDeadUnits() {
+    return this.units.filter((unit) => unit.isDead);
+  }
 }

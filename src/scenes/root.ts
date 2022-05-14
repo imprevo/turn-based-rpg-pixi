@@ -1,10 +1,11 @@
 import { BattleConfig } from '../models/battle-config';
-import { PlayerController } from '../services/player-controller';
+import { TeamController } from '../services/team-controller';
 import { BattleScene } from './battle';
 import { BattleCreator } from '../services/battle-creator';
 import { MenuScene } from './menu';
 import { Scene } from './_scene';
 import { TransitionScene } from './transition';
+import { AIController } from '../services/ai-controller';
 
 export class RootScene extends Scene {
   scene?: Scene;
@@ -24,8 +25,10 @@ export class RootScene extends Scene {
     const battleScene = new BattleScene(battle);
 
     ctrls.forEach((ctrl) => {
-      if (ctrl instanceof PlayerController) {
+      if (ctrl.controlled) {
         battleScene.setController(ctrl);
+      } else {
+        new AIController(battle, ctrl);
       }
     });
 

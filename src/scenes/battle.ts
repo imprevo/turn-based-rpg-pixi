@@ -5,7 +5,7 @@ import { UnitComponent } from '../components/unit';
 import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
-import { PlayerController } from '../services/player-controller';
+import { TeamController } from '../services/team-controller';
 import { Team } from '../models/team';
 import { Scene } from './_scene';
 
@@ -58,13 +58,14 @@ export class BattleScene extends Scene {
     });
   }
 
-  addActionListeners(playerController: PlayerController) {
+  addActionListeners(playerController: TeamController) {
     const playerUnits = this.getUnitsByTeam(playerController.team);
     const enemyUnits = this.getUnitsByTeam(playerController.getOpponentTeam());
 
     this.battle.on('readyForAction', () => {
       this.checkTurn(playerController);
     });
+    // TODO: use getAliveUnits and getDeadUnits from team
     this.actions.on('attack', () => {
       this.offUnitPick();
       const aliveUnits = enemyUnits.filter(
@@ -118,7 +119,7 @@ export class BattleScene extends Scene {
     }
   }
 
-  setController(playerController: PlayerController) {
+  setController(playerController: TeamController) {
     // TODO: create additional component
     this.addActionListeners(playerController);
   }
@@ -162,7 +163,7 @@ export class BattleScene extends Scene {
     });
   }
 
-  checkTurn(playerController: PlayerController) {
+  checkTurn(playerController: TeamController) {
     if (playerController.checkIsTurnAvailable()) {
       // TODO: fix encapsulation
       this.actions.setAbilities(playerController.team.currentUnit.abilities);

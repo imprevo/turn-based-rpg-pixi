@@ -7,13 +7,15 @@ import { HealAction } from './actions/heal-action';
 import { ReviveAction } from './actions/revive-action';
 import { BattleService } from './battle';
 
-export class PlayerController {
+export class TeamController {
   battle: BattleService;
   team: Team;
+  controlled: boolean;
 
-  constructor(battle: BattleService, team: Team) {
+  constructor(battle: BattleService, team: Team, controlled: boolean) {
     this.team = team;
     this.battle = battle;
+    this.controlled = controlled;
   }
 
   attack(target: Unit) {
