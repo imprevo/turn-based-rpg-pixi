@@ -1,3 +1,4 @@
+import { Ability, AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
 import { Action } from './_action';
@@ -10,19 +11,23 @@ enum AttackType {
 
 export class AttackAction extends Action {
   unit: Unit;
+  ability?: Ability;
   target: Unit;
 
   constructor(team: Team, target: Unit) {
     super(team, 2);
     this.unit = team.currentUnit;
+    this.ability = this.unit.abilities.getAbility(AbilityType.ATTACK);
     this.target = target;
   }
 
   canExecute() {
-    return !this.target.isDead;
+    return (this.ability?.canUse() || false) && !this.target.isDead;
   }
 
   action() {
+    this.ability?.use();
+
     const attackType = this.generateAttackType();
 
     switch (attackType) {
@@ -36,6 +41,7 @@ export class AttackAction extends Action {
         break;
       case AttackType.MISS:
         this.target.miss();
+        this.unit.attack();
         break;
       default:
         throw new Error(`Unknown attack type: "${attackType}"`);

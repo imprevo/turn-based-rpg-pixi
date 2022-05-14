@@ -136,7 +136,7 @@ export class ReviveAbility extends Ability {
 }
 
 export class AbilityList {
-  list = [
+  list: Ability[] = [
     new AttackAbility(),
     new AoeAttackAbility(),
     new DefenseAbility(),
