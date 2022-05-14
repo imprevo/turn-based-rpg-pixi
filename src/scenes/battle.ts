@@ -66,15 +66,17 @@ export class BattleScene extends Scene {
       this.checkTurn(playerController);
     });
     this.actions.on('attack', () => {
+      this.offUnitPick();
       const aliveUnits = enemyUnits.filter(
         (component) => !component.unit.isDead
       );
-      this.onceUnitPick(aliveUnits, (target) => {
+      this.addPickUnitLitener(aliveUnits, (target) => {
         playerController.attack(target);
         this.showActions(false);
       });
     });
     this.actions.on('aoeAttack', () => {
+      this.offUnitPick();
       const aliveUnits = enemyUnits
         .filter((component) => !component.unit.isDead)
         .map((component) => component.unit);
@@ -87,23 +89,33 @@ export class BattleScene extends Scene {
       this.showActions(false);
     });
     this.actions.on('heal', () => {
+      this.offUnitPick();
       const aliveUnits = playerUnits.filter(
         (component) => !component.unit.isDead
       );
-      this.onceUnitPick(aliveUnits, (target) => {
+      this.addPickUnitLitener(aliveUnits, (target) => {
         playerController.heal(target);
         this.showActions(false);
       });
     });
     this.actions.on('revive', () => {
-      const aliveUnits = playerUnits.filter(
+      this.offUnitPick();
+      const deadUnits = playerUnits.filter(
         (component) => component.unit.isDead
       );
-      this.onceUnitPick(aliveUnits, (target) => {
+      this.addPickUnitLitener(deadUnits, (target) => {
         playerController.revive(target);
         this.showActions(false);
       });
     });
+  }
+
+  addPickUnitLitener(units: UnitComponent[], action: (target: Unit) => void) {
+    if (units.length > 0) {
+      this.onceUnitPick(units, action);
+    } else {
+      this.actions.showHint('No targets available');
+    }
   }
 
   setController(playerController: PlayerController) {
@@ -133,10 +145,8 @@ export class BattleScene extends Scene {
     this.unitPickSubscriptions.forEach((unsubscribe) => unsubscribe());
   }
 
-  onceUnitPick(enemyUnits: UnitComponent[], action: (target: Unit) => void) {
-    this.offUnitPick();
-
-    this.unitPickSubscriptions = enemyUnits.map((unit) => {
+  onceUnitPick(units: UnitComponent[], action: (target: Unit) => void) {
+    this.unitPickSubscriptions = units.map((unit) => {
       const handlePick = (target: Unit) => {
         this.offUnitPick();
         action(target);

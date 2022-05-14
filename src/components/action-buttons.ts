@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import * as TWEEN from '@tweenjs/tween.js';
+import { Easing, Tween } from '@tweenjs/tween.js';
 import { Button } from './button';
 import { Ability, AbilityList, AbilityType } from '../models/abilities';
 
@@ -46,12 +46,39 @@ class ReviveButton extends AbilityButton {
   }
 }
 
+class Hint extends PIXI.Text {
+  tween?: Tween<Hint>;
+
+  constructor() {
+    super('', { fill: 0xffffff, fontSize: 26 });
+    this.anchor.set(0.5);
+    this.alpha = 0;
+  }
+
+  show(message: string) {
+    this.text = message;
+    this.alpha = 0;
+
+    this.tween?.stop();
+    this.tween = new Tween(this)
+      .to({ alpha: 1 }, 500)
+      .yoyo(true)
+      .repeat(5)
+      .easing(Easing.Back.Out)
+      .start();
+  }
+}
+
 export class ActionButtonsComponent extends PIXI.Container {
+  hint = new Hint();
+
   constructor() {
     super();
 
     this.x = 400;
     this.y = 650;
+
+    this.hint.y = -50;
   }
 
   setAbilities(abilities: AbilityList) {
@@ -65,12 +92,16 @@ export class ActionButtonsComponent extends PIXI.Container {
     });
 
     this.alignButtons(buttons);
-    this.addChild(...buttons);
+    this.addChild(this.hint, ...buttons);
   }
 
   show(show: boolean) {
     const y = show ? 550 : 650;
-    new TWEEN.Tween(this).to({ y }, 300).start();
+    new Tween(this).to({ y }, 300).start();
+  }
+
+  showHint(message: string) {
+    this.hint.show(message);
   }
 
   alignButtons(buttons: Button[]) {
