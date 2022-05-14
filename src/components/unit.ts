@@ -17,6 +17,7 @@ const colors = {
   CRIT: 0xffc107,
   MISS: 0x673ab7,
   HEAL: 0x4caf50,
+  DEFENSE: 0x2196f3,
 };
 
 enum UnitAnimationState {
@@ -185,6 +186,7 @@ export class UnitComponent extends PIXI.Container {
   addListeners() {
     this.unit.on('damage', this.handleUnitDamage);
     this.unit.on('miss', this.handleUnitMiss);
+    this.unit.on('defense', this.handleUnitDefense);
     this.unit.on('heal', this.handleUnitHeal);
     this.unit.on('attack', this.handleUnitAttack);
     this.unit.on('active', this.handleActiveUnit);
@@ -205,6 +207,10 @@ export class UnitComponent extends PIXI.Container {
 
   handleUnitMiss = () => {
     this.showHint('MISS', colors.MISS);
+  };
+
+  handleUnitDefense = () => {
+    this.unitAnimation.setBlink(colors.DEFENSE);
   };
 
   handleUnitHeal = (heal: number) => {
