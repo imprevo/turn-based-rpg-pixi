@@ -5,20 +5,17 @@ export class Button extends PIXI.Sprite {
   isDown = false;
   isOver = false;
 
-  constructor(texture: PIXI.Texture) {
+  constructor(texture: PIXI.Texture, disable = false) {
     super(texture);
 
     this.anchor.set(0.5);
 
-    this.setDefault();
+    this.setDisable(disable);
     this.addListeners();
   }
 
   // TODO: will they be removed after destroying automatically?
   addListeners() {
-    this.interactive = true;
-    this.buttonMode = true;
-
     this.on('pointerdown', this.onButtonDown)
       .on('pointerup', this.onButtonUp)
       .on('pointerupoutside', this.onButtonUp)
@@ -28,15 +25,15 @@ export class Button extends PIXI.Sprite {
 
   onButtonDown() {
     this.isDown = true;
-    this.setActive();
+    this.setActiveColor();
   }
 
   onButtonUp() {
     this.isDown = false;
     if (this.isOver) {
-      this.setHover();
+      this.setHoverColor();
     } else {
-      this.setDefault();
+      this.setDefaultColor();
     }
   }
 
@@ -46,7 +43,7 @@ export class Button extends PIXI.Sprite {
       return;
     }
 
-    this.setHover();
+    this.setHoverColor();
   }
 
   onButtonOut() {
@@ -55,18 +52,34 @@ export class Button extends PIXI.Sprite {
       return;
     }
 
-    this.setDefault();
+    this.setDefaultColor();
   }
 
-  setDefault() {
+  setDisable(disable: boolean) {
+    if (disable) {
+      this.interactive = false;
+      this.buttonMode = false;
+      this.setDisableColor();
+    } else {
+      this.interactive = true;
+      this.buttonMode = true;
+      this.setDefaultColor();
+    }
+  }
+
+  setDefaultColor() {
     this.tint = 0xffffff;
   }
 
-  setHover() {
+  setHoverColor() {
     this.tint = 0xcccccc;
   }
 
-  setActive() {
+  setActiveColor() {
     this.tint = 0xaaaaaa;
+  }
+
+  setDisableColor() {
+    this.tint = 0x888888;
   }
 }
