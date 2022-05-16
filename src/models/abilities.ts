@@ -33,7 +33,7 @@ class Amount {
   }
 
   use() {
-    this.value -= Math.max(0, this.value - 1);
+    this.value = Math.max(0, this.value - 1);
   }
 }
 
