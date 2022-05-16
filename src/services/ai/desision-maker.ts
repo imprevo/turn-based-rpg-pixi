@@ -1,48 +1,66 @@
-import { getRandomInt } from '../../utils/math';
 import { AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { AiActionType } from './action-type';
 
+type ActionWithWeight = {
+  type: AiActionType;
+  weight: number;
+};
+
+type RangeActionItem = {
+  type: AiActionType;
+  value: number;
+};
+
 export class DecisionMaker {
   constructor(public team: Team, public enemyTeam: Team) {}
 
-  chooseNextAction(): AiActionType {
-    const actions = this.getAvailableActions();
-
-    if (!actions.length) {
-      return AiActionType.SKIP_TURN;
-    }
-
-    return actions[getRandomInt(0, actions.length - 1)];
+  chooseNextAction() {
+    const actionWeights = this.getAvailableActionsWithWeight();
+    const range = this.calcActionsWithRange(actionWeights);
+    const rnd = Math.random();
+    const action = range.find(({ value }) => value > rnd);
+    return action ? action.type : AiActionType.SKIP_TURN;
   }
 
-  getAvailableActions() {
-    const actions = [];
+  getAvailableActionsWithWeight() {
+    const actions: ActionWithWeight[] = [];
 
     if (this.canUseAbility(AbilityType.ATTACK)) {
-      actions.push(AiActionType.ATTACK);
+      actions.push({ type: AiActionType.ATTACK, weight: 1 });
     }
 
     if (this.canUseAbility(AbilityType.DEFENSE) && this.isUnitHasEnoughHP()) {
-      actions.push(AiActionType.DEFENSE);
+      actions.push({ type: AiActionType.DEFENSE, weight: 0.5 });
     }
 
     if (
       this.canUseAbility(AbilityType.AOE_ATTACK) &&
       this.hasTargetsToAoeAttack()
     ) {
-      actions.push(AiActionType.AOE_ATTACK);
+      actions.push({ type: AiActionType.AOE_ATTACK, weight: 1 });
     }
 
     if (this.canUseAbility(AbilityType.HEAL) && this.hasTargetsToHeal()) {
-      actions.push(AiActionType.HEAL);
+      actions.push({ type: AiActionType.HEAL, weight: 1.5 });
     }
 
     if (this.canUseAbility(AbilityType.REVIVE) && this.hasTargetsToRevive()) {
-      actions.push(AiActionType.REVIVE);
+      actions.push({ type: AiActionType.REVIVE, weight: 2 });
     }
 
     return actions;
+  }
+
+  calcActionsWithRange(actionWeights: ActionWithWeight[]) {
+    const sum = actionWeights.reduce((sum, item) => sum + item.weight, 0);
+    let prevValue = 0;
+
+    return actionWeights.map<RangeActionItem>(({ type, weight }) => {
+      const value = prevValue + weight;
+      prevValue = value;
+      return { type, value: value / sum };
+    });
   }
 
   isUnitHasEnoughHP() {

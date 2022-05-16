@@ -45,7 +45,7 @@ export class TeamController {
 
   skipTurn() {
     // TODO: implement skip
-    throw new Error('End turn not implemented yet.');
+    throw new Error('Skip turn not implemented yet.');
   }
 
   checkIsTurnAvailable() {
