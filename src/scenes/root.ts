@@ -1,11 +1,10 @@
 import { BattleConfig } from '../models/battle-config';
-import { TeamController } from '../services/team-controller';
 import { BattleScene } from './battle';
 import { BattleCreator } from '../services/battle-creator';
 import { MenuScene } from './menu';
 import { Scene } from './_scene';
 import { TransitionScene } from './transition';
-import { AIController } from '../services/ai-controller';
+import { AIController } from '../services/ai/ai-controller';
 
 export class RootScene extends Scene {
   scene?: Scene;

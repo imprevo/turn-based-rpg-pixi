@@ -1,25 +1,22 @@
-import { BattleService } from './battle';
-import { wait } from '../utils/promise';
-import { TeamController } from './team-controller';
-import { Unit } from '../models/unit';
+import { BattleService } from '../battle';
+import { wait } from '../../utils/promise';
+import { getRandomInt } from '../../utils/math';
+import { TeamController } from '../team-controller';
+import { Unit } from '../../models/unit';
+import { AiActionType } from './action-type';
+import { DecisionMaker } from './desision-maker';
 
 const TURN_DELAY = 500;
-
-enum ActionType {
-  ATTACK,
-  AOE_ATTACK,
-  DEFENSE,
-  HEAL,
-  REVIVE,
-}
 
 export class AIController {
   battle: BattleService;
   teamCtrl: TeamController;
+  decisionMaker: DecisionMaker;
 
   constructor(battle: BattleService, teamCtrl: TeamController) {
     this.teamCtrl = teamCtrl;
     this.battle = battle;
+    this.decisionMaker = new DecisionMaker(this.team, this.enemyTeam);
 
     this.checkTurn();
     this.addListeners();
@@ -41,27 +38,30 @@ export class AIController {
 
   async doTurn() {
     await wait(TURN_DELAY);
-    const actionType = this.chooseNextAction();
+    const actionType = this.decisionMaker.chooseNextAction();
 
     switch (actionType) {
-      case ActionType.ATTACK:
+      case AiActionType.ATTACK:
         this.attack();
         break;
-      case ActionType.AOE_ATTACK:
+      case AiActionType.AOE_ATTACK:
         this.aoeAttack();
         break;
-      case ActionType.DEFENSE:
+      case AiActionType.DEFENSE:
         this.defense();
         break;
-      case ActionType.HEAL:
+      case AiActionType.HEAL:
         this.heal();
         break;
-      case ActionType.REVIVE:
+      case AiActionType.REVIVE:
         this.revive();
+        break;
+      case AiActionType.SKIP_TURN:
+        this.skipTurn();
         break;
 
       default:
-        throw new Error(`Unknown action "${ActionType[actionType]}"`);
+        throw new Error(`Unknown action "${AiActionType[actionType]}"`);
     }
   }
 
@@ -69,15 +69,6 @@ export class AIController {
     if (this.teamCtrl.checkIsTurnAvailable()) {
       this.doTurn();
     }
-  }
-
-  chooseNextAction(): ActionType {
-    // TODO: get ability to check .canUse()
-    const random = Math.random();
-    if (random < 0.2) {
-      return ActionType.DEFENSE;
-    }
-    return ActionType.ATTACK;
   }
 
   attack() {
@@ -97,7 +88,7 @@ export class AIController {
 
   heal() {
     const units = this.team.getAliveUnits();
-    const target = this.findSomeUnit(units);
+    const target = this.findUnitToHeal(units);
     this.teamCtrl.heal(target);
   }
 
@@ -107,11 +98,21 @@ export class AIController {
     this.teamCtrl.revive(target);
   }
 
-  findSomeUnit(units: Unit[]) {
-    return units[this.getRandomInt(0, units.length - 1)];
+  skipTurn() {
+    this.teamCtrl.skipTurn();
   }
 
-  getRandomInt(min: number, max: number) {
-    return Math.floor(min + Math.random() * (max + 1 - min));
+  findSomeUnit(units: Unit[]) {
+    return units[getRandomInt(0, units.length - 1)];
+  }
+
+  findUnitToHeal(units: Unit[]) {
+    const unitsSortedByHP = units.sort((a, b) => {
+      const hpA = a.stats.hp;
+      const hpB = b.stats.hp;
+      if (hpA === hpB) return 0;
+      return hpA > hpB ? 1 : -1;
+    });
+    return unitsSortedByHP[0];
   }
 }

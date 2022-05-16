@@ -43,6 +43,11 @@ export class TeamController {
     this.battle.doAction(action);
   }
 
+  skipTurn() {
+    // TODO: implement skip
+    throw new Error('End turn not implemented yet.');
+  }
+
   checkIsTurnAvailable() {
     return this.battle.checkIsTurnAvailable(this.team);
   }
