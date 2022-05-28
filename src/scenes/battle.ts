@@ -7,6 +7,10 @@ import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
 import { TeamController } from '../services/team-controller';
 import { Scene } from './_scene';
+import {
+  ActionCreator,
+  TargetActionCreator,
+} from '../services/actions/_action';
 
 export class BattleScene extends Scene {
   battle: BattleService;
@@ -57,51 +61,29 @@ export class BattleScene extends Scene {
     });
   }
 
-  addActionListeners(playerController: TeamController) {
+  addActionListeners(teamCtrl: TeamController) {
     this.battle.on('readyForAction', () => {
-      this.checkTurn(playerController);
+      this.checkTurn(teamCtrl);
     });
     this.actions.on('attack', () => {
-      this.offUnitPick();
-      const actionCreator = playerController.createAttackAC();
-      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
-      this.addPickUnitListener(units, (target) => {
-        actionCreator.setTarget(target);
-        playerController.applyAction(actionCreator);
-        this.showActions(false);
-      });
+      const action = teamCtrl.createAttackAC();
+      this.useAction(teamCtrl, action);
     });
     this.actions.on('aoeAttack', () => {
-      this.offUnitPick();
-      const actionCreator = playerController.createAoeAttackAC();
-      playerController.applyAction(actionCreator);
-      this.showActions(false);
+      const action = teamCtrl.createAoeAttackAC();
+      this.useAction(teamCtrl, action);
     });
     this.actions.on('defence', () => {
-      this.offUnitPick();
-      const actionCreator = playerController.createDefenseAC();
-      playerController.applyAction(actionCreator);
-      this.showActions(false);
+      const action = teamCtrl.createDefenseAC();
+      this.useAction(teamCtrl, action);
     });
     this.actions.on('heal', () => {
-      this.offUnitPick();
-      const actionCreator = playerController.createHealAC();
-      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
-      this.addPickUnitListener(units, (target) => {
-        actionCreator.setTarget(target);
-        playerController.applyAction(actionCreator);
-        this.showActions(false);
-      });
+      const action = teamCtrl.createHealAC();
+      this.useAction(teamCtrl, action);
     });
     this.actions.on('revive', () => {
-      this.offUnitPick();
-      const actionCreator = playerController.createReviveAC();
-      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
-      this.addPickUnitListener(units, (target) => {
-        actionCreator.setTarget(target);
-        playerController.applyAction(actionCreator);
-        this.showActions(false);
-      });
+      const action = teamCtrl.createReviveAC();
+      this.useAction(teamCtrl, action);
     });
   }
 
@@ -157,6 +139,22 @@ export class BattleScene extends Scene {
     });
   }
 
+  useAction(teamCtrl: TeamController, actionCreator: ActionCreator) {
+    this.offUnitPick();
+
+    if (actionCreator instanceof TargetActionCreator) {
+      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
+      this.addPickUnitListener(units, (target) => {
+        actionCreator.setTarget(target);
+        teamCtrl.applyAction(actionCreator);
+        this.showActions(false);
+      });
+    } else {
+      teamCtrl.applyAction(actionCreator);
+      this.showActions(false);
+    }
+  }
+
   checkTurn(playerController: TeamController) {
     if (playerController.checkIsTurnAvailable()) {
       // TODO: fix encapsulation
@@ -168,9 +166,7 @@ export class BattleScene extends Scene {
   }
 
   getUnitsComponentsByUnits(units: Unit[]) {
-    return this.units.filter((component) => {
-      return units.includes(component.unit);
-    });
+    return this.units.filter((component) => units.includes(component.unit));
   }
 
   showActions(visible: boolean) {
