@@ -1,7 +1,7 @@
 import { Ability, AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
-import { Action } from './_action';
+import { Action, TargetActionCreator } from './_action';
 
 enum AttackType {
   DAMAGE,
@@ -9,7 +9,7 @@ enum AttackType {
   MISS,
 }
 
-export class AttackAction extends Action {
+class AttackAction extends Action {
   unit: Unit;
   ability?: Ability;
   target: Unit;
@@ -74,5 +74,16 @@ export class AttackAction extends Action {
   calculateCriticalDamage() {
     const damage = this.calculateDamage();
     return damage * 2;
+  }
+}
+
+export class AttackActionCreator extends TargetActionCreator {
+  constructor(team: Team, public targets: Unit[]) {
+    super(team, AbilityType.ATTACK, targets);
+  }
+
+  create() {
+    if (!this.target) throw new Error('Has no target!');
+    return new AttackAction(this.team, this.target);
   }
 }

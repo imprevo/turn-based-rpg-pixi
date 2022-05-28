@@ -6,7 +6,6 @@ import { BattleService } from '../services/battle';
 import { Unit } from '../models/unit';
 import { wait } from '../utils/promise';
 import { TeamController } from '../services/team-controller';
-import { Team } from '../models/team';
 import { Scene } from './_scene';
 
 export class BattleScene extends Scene {
@@ -59,59 +58,54 @@ export class BattleScene extends Scene {
   }
 
   addActionListeners(playerController: TeamController) {
-    const playerUnits = this.getUnitsByTeam(playerController.team);
-    const enemyUnits = this.getUnitsByTeam(playerController.getOpponentTeam());
-
     this.battle.on('readyForAction', () => {
       this.checkTurn(playerController);
     });
-    // TODO: use getAliveUnits and getDeadUnits from team
     this.actions.on('attack', () => {
       this.offUnitPick();
-      const aliveUnits = enemyUnits.filter(
-        (component) => !component.unit.isDead
-      );
-      this.addPickUnitLitener(aliveUnits, (target) => {
-        playerController.attack(target);
+      const actionCreator = playerController.createAttackAC();
+      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
+      this.addPickUnitListener(units, (target) => {
+        actionCreator.setTarget(target);
+        playerController.applyAction(actionCreator);
         this.showActions(false);
       });
     });
     this.actions.on('aoeAttack', () => {
       this.offUnitPick();
-      const aliveUnits = enemyUnits
-        .filter((component) => !component.unit.isDead)
-        .map((component) => component.unit);
-      playerController.aoeAttack(aliveUnits);
+      const actionCreator = playerController.createAoeAttackAC();
+      playerController.applyAction(actionCreator);
       this.showActions(false);
     });
     this.actions.on('defence', () => {
       this.offUnitPick();
-      playerController.defense();
+      const actionCreator = playerController.createDefenseAC();
+      playerController.applyAction(actionCreator);
       this.showActions(false);
     });
     this.actions.on('heal', () => {
       this.offUnitPick();
-      const aliveUnits = playerUnits.filter(
-        (component) => !component.unit.isDead
-      );
-      this.addPickUnitLitener(aliveUnits, (target) => {
-        playerController.heal(target);
+      const actionCreator = playerController.createHealAC();
+      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
+      this.addPickUnitListener(units, (target) => {
+        actionCreator.setTarget(target);
+        playerController.applyAction(actionCreator);
         this.showActions(false);
       });
     });
     this.actions.on('revive', () => {
       this.offUnitPick();
-      const deadUnits = playerUnits.filter(
-        (component) => component.unit.isDead
-      );
-      this.addPickUnitLitener(deadUnits, (target) => {
-        playerController.revive(target);
+      const actionCreator = playerController.createReviveAC();
+      const units = this.getUnitsComponentsByUnits(actionCreator.targets);
+      this.addPickUnitListener(units, (target) => {
+        actionCreator.setTarget(target);
+        playerController.applyAction(actionCreator);
         this.showActions(false);
       });
     });
   }
 
-  addPickUnitLitener(units: UnitComponent[], action: (target: Unit) => void) {
+  addPickUnitListener(units: UnitComponent[], action: (target: Unit) => void) {
     if (units.length > 0) {
       this.onceUnitPick(units, action);
     } else {
@@ -173,9 +167,9 @@ export class BattleScene extends Scene {
     }
   }
 
-  getUnitsByTeam(team: Team) {
+  getUnitsComponentsByUnits(units: Unit[]) {
     return this.units.filter((component) => {
-      return team.units.includes(component.unit);
+      return units.includes(component.unit);
     });
   }
 

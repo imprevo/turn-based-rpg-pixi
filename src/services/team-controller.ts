@@ -1,10 +1,10 @@
 import { Team } from '../models/team';
-import { Unit } from '../models/unit';
-import { AoeAttackAction } from './actions/aoe-attack-action';
-import { AttackAction } from './actions/attack-action';
-import { DefenseAction } from './actions/defense-action';
-import { HealAction } from './actions/heal-action';
-import { ReviveAction } from './actions/revive-action';
+import { AoeAttackActionCreator } from './actions/aoe-attack-action';
+import { AttackActionCreator } from './actions/attack-action';
+import { DefenseActionCreator } from './actions/defense-action';
+import { HealActionCreator } from './actions/heal-action';
+import { ReviveActionCreator } from './actions/revive-action';
+import { ActionCreator } from './actions/_action';
 import { BattleService } from './battle';
 
 export class TeamController {
@@ -18,28 +18,32 @@ export class TeamController {
     this.controlled = controlled;
   }
 
-  attack(target: Unit) {
-    const action = new AttackAction(this.team, target);
-    this.battle.doAction(action);
+  createAttackAC() {
+    const targets = this.getOpponentTeam().getAliveUnits();
+    return new AttackActionCreator(this.team, targets);
   }
 
-  aoeAttack(targets: Unit[]) {
-    const action = new AoeAttackAction(this.team, targets);
-    this.battle.doAction(action);
+  createAoeAttackAC() {
+    const targets = this.getOpponentTeam().getAliveUnits();
+    return new AoeAttackActionCreator(this.team, targets);
   }
 
-  defense() {
-    const action = new DefenseAction(this.team);
-    this.battle.doAction(action);
+  createDefenseAC() {
+    return new DefenseActionCreator(this.team);
   }
 
-  heal(target: Unit) {
-    const action = new HealAction(this.team, target);
-    this.battle.doAction(action);
+  createHealAC() {
+    const targets = this.team.getAliveUnits();
+    return new HealActionCreator(this.team, targets);
   }
 
-  revive(target: Unit) {
-    const action = new ReviveAction(this.team, target);
+  createReviveAC() {
+    const targets = this.team.getDeadUnits();
+    return new ReviveActionCreator(this.team, targets);
+  }
+
+  applyAction(actionCreator: ActionCreator) {
+    const action = actionCreator.create();
     this.battle.doAction(action);
   }
 

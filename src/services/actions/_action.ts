@@ -1,4 +1,6 @@
+import { AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
+import { Unit } from '../../models/unit';
 import { wait } from '../../utils/promise';
 
 const DEFAULT_DELAY = 1000;
@@ -31,4 +33,40 @@ export abstract class Action {
   }
 
   protected abstract action(): Promise<void> | void;
+}
+
+export abstract class ActionCreator {
+  constructor(public team: Team, public abilityType: AbilityType) {}
+
+  canCreate() {
+    return this.canUseAbility();
+  }
+
+  abstract create(): Action;
+
+  canUseAbility() {
+    const healAbility = this.team.currentUnit.abilities.getAbility(
+      this.abilityType
+    );
+    return healAbility?.canUse() || false;
+  }
+}
+
+export abstract class TargetActionCreator extends ActionCreator {
+  targets: Unit[];
+  target?: Unit;
+
+  constructor(team: Team, abilityType: AbilityType, targets: Unit[]) {
+    super(team, abilityType);
+
+    this.targets = targets;
+  }
+
+  canCreate() {
+    return this.targets.length > 0 && super.canCreate();
+  }
+
+  setTarget(target: Unit) {
+    this.target = target;
+  }
 }

@@ -1,65 +1,101 @@
-import { AbilityType } from '../../models/abilities';
-import { Team } from '../../models/team';
-import { AiActionType } from './action-type';
+import { Unit } from '../../models/unit';
+import { getRandomInt } from '../../utils/math';
+import { ActionCreator } from '../actions/_action';
+import { TeamController } from '../team-controller';
 
 type ActionWithWeight = {
-  type: AiActionType;
+  action: ActionCreator;
   weight: number;
 };
 
 type RangeActionItem = {
-  type: AiActionType;
+  action: ActionCreator;
   value: number;
 };
 
 export class DecisionMaker {
-  constructor(public team: Team, public enemyTeam: Team) {}
+  constructor(public teamCtrl: TeamController) {}
+
+  get team() {
+    return this.teamCtrl.team;
+  }
+
+  get enemyTeam() {
+    return this.teamCtrl.getOpponentTeam();
+  }
 
   chooseNextAction() {
     const actionWeights = this.getAvailableActionsWithWeight();
     const range = this.calcActionsWithRange(actionWeights);
     const rnd = Math.random();
-    const action = range.find(({ value }) => value > rnd);
-    return action ? action.type : AiActionType.SKIP_TURN;
+    const actionWithWeight = range.find(({ value }) => value > rnd);
+    return actionWithWeight ? actionWithWeight.action : null;
   }
 
-  getAvailableActionsWithWeight() {
-    const actions: ActionWithWeight[] = [];
+  getAvailableActionsWithWeight(): ActionWithWeight[] {
+    return [
+      this.getAoeAttackAction(),
+      this.getAoeAttackAction(),
+      this.getDefenseAction(),
+      this.getHealAction(),
+      this.getReviveAction(),
+    ].filter((action): action is ActionWithWeight => action !== null);
+  }
 
-    if (this.canUseAbility(AbilityType.ATTACK)) {
-      actions.push({ type: AiActionType.ATTACK, weight: 1 });
+  getAttackAction(): ActionWithWeight | null {
+    const action = this.teamCtrl.createAttackAC();
+    if (action.canCreate()) {
+      action.setTarget(this.findSomeUnit(action.targets));
+      return { action, weight: 1 };
+    }
+    return null;
+  }
+
+  getAoeAttackAction(): ActionWithWeight | null {
+    const action = this.teamCtrl.createAoeAttackAC();
+    if (action.canCreate() && this.hasTargets(action.targets, 2)) {
+      return { action, weight: 1 };
+    }
+    return null;
+  }
+
+  getDefenseAction(): ActionWithWeight | null {
+    const action = this.teamCtrl.createDefenseAC();
+    if (action.canCreate() && this.isUnitHasEnoughHP()) {
+      return { action, weight: 0.5 };
+    }
+    return null;
+  }
+
+  getHealAction(): ActionWithWeight | null {
+    const action = this.teamCtrl.createHealAC();
+    const targets = this.getTargetsToHeal(action.targets);
+    if (action.canCreate() && this.hasTargets(targets, 1)) {
+      action.setTarget(this.findUnitToHeal(targets));
+      return { action, weight: 1.5 };
     }
 
-    if (this.canUseAbility(AbilityType.DEFENSE) && this.isUnitHasEnoughHP()) {
-      actions.push({ type: AiActionType.DEFENSE, weight: 0.5 });
+    return null;
+  }
+
+  getReviveAction(): ActionWithWeight | null {
+    const action = this.teamCtrl.createReviveAC();
+    if (action.canCreate() && this.hasTargets(action.targets, 1)) {
+      action.setTarget(this.findSomeUnit(action.targets));
+      return { action, weight: 2 };
     }
 
-    if (
-      this.canUseAbility(AbilityType.AOE_ATTACK) &&
-      this.hasTargetsToAoeAttack()
-    ) {
-      actions.push({ type: AiActionType.AOE_ATTACK, weight: 1 });
-    }
-
-    if (this.canUseAbility(AbilityType.HEAL) && this.hasTargetsToHeal()) {
-      actions.push({ type: AiActionType.HEAL, weight: 1.5 });
-    }
-
-    if (this.canUseAbility(AbilityType.REVIVE) && this.hasTargetsToRevive()) {
-      actions.push({ type: AiActionType.REVIVE, weight: 2 });
-    }
-
-    return actions;
+    return null;
   }
 
   calcActionsWithRange(actionWeights: ActionWithWeight[]) {
     const sum = actionWeights.reduce((sum, item) => sum + item.weight, 0);
     let prevValue = 0;
 
-    return actionWeights.map<RangeActionItem>(({ type, weight }) => {
+    return actionWeights.map<RangeActionItem>(({ action, weight }) => {
       const value = prevValue + weight;
       prevValue = value;
-      return { type, value: value / sum };
+      return { action, value: value / sum };
     });
   }
 
@@ -71,20 +107,25 @@ export class DecisionMaker {
     return this.enemyTeam.getAliveUnits().length > 1;
   }
 
-  hasTargetsToHeal() {
-    const damagedUnits = this.team
-      .getAliveUnits()
-      .filter((unit) => (unit.stats.hpMax - unit.stats.hp) / 2 > 1);
-    return damagedUnits.length > 0;
+  getTargetsToHeal(units: Unit[]) {
+    return units.filter((unit) => (unit.stats.hpMax - unit.stats.hp) / 2 > 1);
   }
 
-  hasTargetsToRevive() {
-    const damagedUnits = this.team.getDeadUnits();
-    return damagedUnits.length > 0;
+  hasTargets(targets: Unit[], min: number) {
+    return targets.length >= min;
   }
 
-  canUseAbility(type: AbilityType) {
-    const healAbility = this.team.currentUnit.abilities.getAbility(type);
-    return healAbility?.canUse() || false;
+  findSomeUnit(units: Unit[]) {
+    return units[getRandomInt(0, units.length - 1)];
+  }
+
+  findUnitToHeal(units: Unit[]) {
+    const unitsSortedByHP = units.sort((a, b) => {
+      const hpA = a.stats.hp;
+      const hpB = b.stats.hp;
+      if (hpA === hpB) return 0;
+      return hpA > hpB ? 1 : -1;
+    });
+    return unitsSortedByHP[0];
   }
 }

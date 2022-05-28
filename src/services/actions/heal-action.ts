@@ -1,9 +1,9 @@
 import { Ability, AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
-import { Action } from './_action';
+import { Action, TargetActionCreator } from './_action';
 
-export class HealAction extends Action {
+class HealAction extends Action {
   unit: Unit;
   ability?: Ability;
   target: Unit;
@@ -23,5 +23,16 @@ export class HealAction extends Action {
   action() {
     this.ability?.use();
     this.target.heal(this.heal);
+  }
+}
+
+export class HealActionCreator extends TargetActionCreator {
+  constructor(team: Team, targets: Unit[]) {
+    super(team, AbilityType.HEAL, targets);
+  }
+
+  create() {
+    if (!this.target) throw new Error('Has no target!');
+    return new HealAction(this.team, this.target);
   }
 }

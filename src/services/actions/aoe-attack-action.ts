@@ -2,9 +2,9 @@ import { Ability, AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
 import { wait } from '../../utils/promise';
-import { Action } from './_action';
+import { Action, ActionCreator } from './_action';
 
-export class AoeAttackAction extends Action {
+class AoeAttackAction extends Action {
   unit: Unit;
   ability?: Ability;
   targets: Unit[];
@@ -42,5 +42,15 @@ export class AoeAttackAction extends Action {
     }
 
     return Math.max(0, actualDamage);
+  }
+}
+
+export class AoeAttackActionCreator extends ActionCreator {
+  constructor(team: Team, public targets: Unit[]) {
+    super(team, AbilityType.AOE_ATTACK);
+  }
+
+  create() {
+    return new AoeAttackAction(this.team, this.targets);
   }
 }

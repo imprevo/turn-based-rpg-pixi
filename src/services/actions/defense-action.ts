@@ -1,9 +1,9 @@
 import { Ability, AbilityType } from '../../models/abilities';
 import { Team } from '../../models/team';
 import { Unit } from '../../models/unit';
-import { Action } from './_action';
+import { Action, ActionCreator } from './_action';
 
-export class DefenseAction extends Action {
+class DefenseAction extends Action {
   unit: Unit;
   ability?: Ability;
 
@@ -20,5 +20,15 @@ export class DefenseAction extends Action {
   action() {
     this.ability?.use();
     this.unit.defense();
+  }
+}
+
+export class DefenseActionCreator extends ActionCreator {
+  constructor(team: Team) {
+    super(team, AbilityType.DEFENSE);
+  }
+
+  create() {
+    return new DefenseAction(this.team);
   }
 }
